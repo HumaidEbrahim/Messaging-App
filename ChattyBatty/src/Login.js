@@ -1,13 +1,26 @@
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
-import auth from './firebaseConfig'
+import { doc, serverTimestamp, setDoc, getDoc } from 'firebase/firestore'
+import auth,{ db } from './firebaseConfig'
 
-const login = async () =>
-{
+
+const login = async () => {
     const provider = new GoogleAuthProvider()
     const result = await signInWithPopup(auth, provider)
     const user = result.user
-    console.log(user)
-}
+  
+    const userRef = doc(db, 'users', user.uid)
+    const userSnap = await getDoc(userRef)
+
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        username: user.displayName,
+        status: "I'm new!",
+        photo: user.photoURL,
+        creationDate: serverTimestamp(),
+        friends: []
+      })
+    } 
+  }
 
 export const logout = () =>
      signOut(auth)

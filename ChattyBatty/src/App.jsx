@@ -14,7 +14,7 @@ const App = () => {
   return (
    <div> 
     {user ? 
-        <MainApp user={user}/>
+        <MainApp uid={user.uid}/>
       :  <WelcomePage onClick={login}/>
     }
    </div>
