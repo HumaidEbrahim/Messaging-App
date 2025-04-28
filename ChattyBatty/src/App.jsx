@@ -1,13 +1,22 @@
 import { useState } from 'react'
-import { BigHeader } from '@/components/common'
+import WelcomePage from '@/components/WelcomePage'
+import MainApp from '@/components/MainApp'
 
-function App() {
-  const [count, setCount] = useState(0)
+import { useAuthState } from 'react-firebase-hooks/auth'
+import login from './Login'
+import auth from './firebaseConfig'
 
+
+
+const App = () => {
+  const [user] = useAuthState(auth)
+  
   return (
    <div> 
-    <BigHeader text={'Welcome to ChattyBatty'} />
-    <button className="btn">Default</button>
+    {user ? 
+        <MainApp user={user}/>
+      :  <WelcomePage onClick={login}/>
+    }
    </div>
   )
 }
