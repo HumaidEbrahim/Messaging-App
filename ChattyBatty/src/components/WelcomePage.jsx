@@ -15,7 +15,10 @@ const WelcomePage = ({ onClick }) =>
             <p className="py-6">
              Talk with friends and stuff
             </p>
-            <button className="btn btn-primary" onClick={onClick}>Login</button>
+            <button className="btn btn-primary text-black]" onClick={onClick}>
+              <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" />
+              Login with Google
+            </button>
           </div>
         </div>
         </div>
