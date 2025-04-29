@@ -35,6 +35,7 @@ const MainApp = ({ uid }) => {
 
     <aside className=" bg-base-100  overflow-y-auto">
       <SideBar />
+      <FriendsList friendIds={user.friends} />
     </aside>
 
     <main className="flex-1 overflow-y-auto p-10">
