@@ -32,7 +32,7 @@ const ThemeSelector = () => {
   )
 
   return (
-    <div className="dropdown mb-72">
+    <div className="dropdown mb-2">
     <div tabIndex={0} role="button" className="btn m-1">
       Theme
       <svg

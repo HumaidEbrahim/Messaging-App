@@ -1,11 +1,12 @@
 import SideBar from "./SideBar"
 import { BigHeader } from "./Common"
-import { logout } from "../Login"
 import { getDoc, doc } from "firebase/firestore"
 import { db } from '../firebaseConfig'
 import { useEffect, useState } from "react"
 import FriendsList from "./FriendsList"
 import ThemeSelector from "./ThemeSelector"
+import Header from "./Header"
+import Chat from "./Chat"
 
 const MainApp = ({ uid }) => {
   const [user, setUser] = useState()
@@ -26,19 +27,27 @@ const MainApp = ({ uid }) => {
   }
  
   return (
-    <div> 
-        <ThemeSelector />
-      <div className="avatar avatar-online">
-    <div className="w-24 rounded-full">
-        <img src={user.photo} />
-    </div>
-    </div>
-      <BigHeader text={`Hello ${user.username}`} />
-      <h1>{user.status}</h1>
-      <input type="text" placeholder="Add Friend" className="input" />
-      <FriendsList />
-      <button className="btn btn-primary" onClick={logout}>LogOut</button>
-    </div>
+    <div className="flex flex-col h-screen">
+
+    <Header photo={user.photo} />
+  
+  <div className="flex flex-1 overflow-hidden">
+
+    <aside className=" bg-base-100  overflow-y-auto">
+      <SideBar />
+    </aside>
+
+    <main className="flex-1 overflow-y-auto p-10">
+      <Chat />
+    </main>
+       
+   
+  </div>
+  <footer className="footer  footer-center bg-base-300 text-base-content">
+                <input type="text" placeholder="Message" className="input input-xl" />
+                </footer>
+</div>
+
   )
 }
 
