@@ -18,7 +18,7 @@ const WelcomePage = ({ onClick }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default WelcomePage;
+export default WelcomePage

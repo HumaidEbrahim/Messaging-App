@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { useEffect, useState } from 'react'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from '../firebaseConfig'
 
 const Friend = ({ friend }) => {
   return (
@@ -15,11 +15,11 @@ const Friend = ({ friend }) => {
         </div>
       </div>
     </li>
-  );
-};
+  )
+}
 
 const FriendsList = ({ friends }) => {
-  if (!friends) return "No friends";
+  if (!friends) return 'No friends'
 
   return (
     <ul className="list bg-base-100 rounded-box shadow-md">
@@ -28,7 +28,7 @@ const FriendsList = ({ friends }) => {
       ))}
       <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Friends</li>
     </ul>
-  );
-};
+  )
+}
 
-export default FriendsList;
+export default FriendsList

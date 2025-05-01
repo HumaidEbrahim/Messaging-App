@@ -21,7 +21,7 @@ const SearchBar = () => {
         <input type="search" required placeholder="Search" />
       </label>
     </>
-  );
-};
+  )
+}
 
-export default SearchBar;
+export default SearchBar

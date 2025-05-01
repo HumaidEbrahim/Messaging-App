@@ -1,39 +1,38 @@
-import SearchBar from "./SearchBar";
-import { db } from "../firebaseConfig";
-import { collection, query, where, orderBy } from "firebase/firestore";
-import { useCollectionData } from "react-firebase-hooks/firestore";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+import SearchBar from './SearchBar'
+import { db } from '../firebaseConfig'
+import { collection, query, where, orderBy } from 'firebase/firestore'
+import { useCollectionData } from 'react-firebase-hooks/firestore'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 const Chat = ({ chat }) => {
   return (
     <li>
-      {" "}
-      {chat.lastMessage.message}{" "}
-      {dayjs(chat.lastMessage.sentAt.toDate()).fromNow()}{" "}
+      {' '}
+      {chat.lastMessage.message}{' '}
+      {dayjs(chat.lastMessage.sentAt.toDate()).fromNow()}{' '}
     </li>
-  );
-};
+  )
+}
 
 const SideBar = ({ uid }) => {
   const q = query(
-    collection(db, "chat"),
-    where("participants", "array-contains", uid),
-  );
-  const [chats, error] = useCollectionData(q, { idField: "id" });
+    collection(db, 'chat'),
+    where('participants', 'array-contains', uid),
+  )
+  const [chats, error] = useCollectionData(q, { idField: 'id' })
 
-  console.log(chats);
+  console.log(chats)
 
-  if (error) console.log(error.message);
-  if (!chats) return "No chats";
+  if (error) console.log(error.message)
+  if (!chats) return 'No chats'
 
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col items-center justify-left">
-        {/* Page content here */}
         <label
           htmlFor="my-drawer-2"
           className="btn btn-primary drawer-button lg:hidden"
@@ -58,7 +57,7 @@ const SideBar = ({ uid }) => {
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SideBar;
+export default SideBar

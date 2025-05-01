@@ -1,18 +1,20 @@
-import WelcomePage from "@/components/WelcomePage";
-import MainApp from "@/components/MainApp";
+import WelcomePage from '@/components/WelcomePage'
+import MainApp from '@/components/MainApp'
 
-import { useAuthState } from "react-firebase-hooks/auth";
-import login from "./Login";
-import auth from "./firebaseConfig";
+import { useAuthState } from 'react-firebase-hooks/auth'
+import login from './Login'
+import auth from './firebaseConfig'
 
 const App = () => {
-  const [user] = useAuthState(auth);
+  const [user] = useAuthState(auth)
+
+  console.log(user)
 
   return (
     <div>
-      {user ? <MainApp uid={user.uid} /> : <WelcomePage onClick={login} />}
+      {user ? <MainApp user={user} /> : <WelcomePage onClick={login} />}
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

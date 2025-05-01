@@ -1,23 +1,23 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const ThemeSelector = () => {
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState('dark')
 
   const handleThemeChange = (e) => {
-    const selectedTheme = e.target.value;
-    setTheme(selectedTheme);
-    document.documentElement.setAttribute("data-theme", selectedTheme);
-  };
+    const selectedTheme = e.target.value
+    setTheme(selectedTheme)
+    document.documentElement.setAttribute('data-theme', selectedTheme)
+  }
 
   const themes = [
-    { id: 1, name: "dark", emoji: "🌑" },
-    { id: 2, name: "retro", emoji: "☎️" },
-    { id: 3, name: "cyberpunk", emoji: "😎" },
-    { id: 4, name: "night", emoji: "🌙" },
-    { id: 5, name: "coffee", emoji: "☕" },
-    { id: 6, name: "aqua", emoji: "🌊" },
-    { id: 7, name: "sunset", emoji: "🌄" },
-  ];
+    { id: 1, name: 'dark', emoji: '🌑' },
+    { id: 2, name: 'retro', emoji: '☎️' },
+    { id: 3, name: 'cyberpunk', emoji: '😎' },
+    { id: 4, name: 'night', emoji: '🌙' },
+    { id: 5, name: 'coffee', emoji: '☕' },
+    { id: 6, name: 'aqua', emoji: '🌊' },
+    { id: 7, name: 'sunset', emoji: '🌄' },
+  ]
 
   const ListItem = ({ name, emoji }) => (
     <li>
@@ -29,7 +29,7 @@ const ThemeSelector = () => {
         value={name}
       />
     </li>
-  );
+  )
 
   return (
     <div className="dropdown mb-2">
@@ -54,7 +54,7 @@ const ThemeSelector = () => {
         ))}
       </ul>
     </div>
-  );
-};
+  )
+}
 
-export default ThemeSelector;
+export default ThemeSelector

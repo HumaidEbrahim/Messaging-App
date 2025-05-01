@@ -1,7 +1,7 @@
-import ThemeSelector from "./ThemeSelector";
-import { logout } from "../Login";
+import ThemeSelector from './ThemeSelector'
+import { logout } from '../Login'
 
-const Header = ({ photo }) => {
+const Header = ({ photo, username }) => {
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
@@ -14,13 +14,13 @@ const Header = ({ photo }) => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              {" "}
+              {' '}
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M4 6h16M4 12h16M4 18h7"
-              />{" "}
+              />{' '}
             </svg>
           </div>
           <ul
@@ -38,7 +38,7 @@ const Header = ({ photo }) => {
       </div>
       <div className="navbar-end">
         <ThemeSelector />
-
+        {username}
         {/* Logout */}
         <div className="dropdown dropdown-hover dropdown-start pl-10 pr-10">
           <div className="avatar avatar-online">
@@ -59,7 +59,7 @@ const Header = ({ photo }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

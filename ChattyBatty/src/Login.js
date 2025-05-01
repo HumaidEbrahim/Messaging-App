@@ -1,14 +1,14 @@
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
-import auth, { db } from "./firebaseConfig";
+import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
+import { doc, serverTimestamp, setDoc, getDoc } from 'firebase/firestore'
+import auth, { db } from './firebaseConfig'
 
 const login = async () => {
-  const provider = new GoogleAuthProvider();
-  const result = await signInWithPopup(auth, provider);
-  const user = result.user;
+  const provider = new GoogleAuthProvider()
+  const result = await signInWithPopup(auth, provider)
+  const user = result.user
 
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
+  const userRef = doc(db, 'users', user.uid)
+  const userSnap = await getDoc(userRef)
 
   if (!userSnap.exists()) {
     await setDoc(userRef, {
@@ -17,10 +17,10 @@ const login = async () => {
       photo: user.photoURL,
       creationDate: serverTimestamp(),
       friends: [],
-    });
+    })
   }
-};
+}
 
-export const logout = () => signOut(auth);
+export const logout = () => signOut(auth)
 
-export default login;
+export default login
