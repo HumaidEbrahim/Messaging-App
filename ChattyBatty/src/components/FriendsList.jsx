@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react'
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '../firebaseConfig'
+import { useFriends } from '../FriendContext'
 
 const Friend = ({ friend }) => {
   return (
@@ -18,7 +16,10 @@ const Friend = ({ friend }) => {
   )
 }
 
-const FriendsList = ({ friends }) => {
+const FriendsList = () => {
+  const friends = useFriends()
+  console.log(friends)
+
   if (!friends) return 'No friends'
 
   return (

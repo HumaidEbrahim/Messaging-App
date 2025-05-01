@@ -1,18 +1,39 @@
 import SearchBar from './SearchBar'
 import { db } from '../firebaseConfig'
 import { collection, query, where, orderBy } from 'firebase/firestore'
-import { useCollectionData } from 'react-firebase-hooks/firestore'
+import { useCollection } from 'react-firebase-hooks/firestore'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { useFriends } from '../FriendContext' 
 
 dayjs.extend(relativeTime)
 
-const Chat = ({ chat }) => {
+const Chat = ({ chat, uid }) => {
+  const friends = useFriends()
+  const friendId = chat.participants.find(p => p !== uid)
+  const friend = friends.find(friend => friend.id === friendId)
+
   return (
-    <li>
-      {' '}
-      {chat.lastMessage.message}{' '}
-      {dayjs(chat.lastMessage.sentAt.toDate()).fromNow()}{' '}
+    <li class="pb-3 sm:pb-4">
+      <div class="flex items-center space-x-4 rtl:space-x-reverse">
+        <div class="shrink-0">
+          <img
+            class="w-8 h-8 rounded-full"
+            src={friend.photo}
+          />
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+            {friend.username}
+          </p>
+          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+            {chat.lastMessage.message}
+          </p>
+        </div>
+        <div class="inline-flex items-center   text-gray-900 dark:text-white">
+          {dayjs(chat.lastMessage.sentAt.toDate()).fromNow()}
+        </div>
+      </div>
     </li>
   )
 }
@@ -22,12 +43,17 @@ const SideBar = ({ uid }) => {
     collection(db, 'chat'),
     where('participants', 'array-contains', uid),
   )
-  const [chats, error] = useCollectionData(q, { idField: 'id' })
 
-  console.log(chats)
+  const [snapshot, error] = useCollection(q)
+
+  const chats = snapshot?.docs.map(doc => ({
+    ...doc.data(),
+    id: doc.id,
+  })) 
 
   if (error) console.log(error.message)
   if (!chats) return 'No chats'
+
 
   return (
     <div className="drawer lg:drawer-open">
@@ -52,7 +78,7 @@ const SideBar = ({ uid }) => {
           <SearchBar />
 
           {chats.map((chat) => (
-            <Chat key={chat.id} chat={chat} />
+            <Chat key={chat.id} chat={chat} uid={uid} />
           ))}
         </ul>
       </div>

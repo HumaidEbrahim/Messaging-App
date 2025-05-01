@@ -8,11 +8,9 @@ import auth from './firebaseConfig'
 const App = () => {
   const [user] = useAuthState(auth)
 
-  console.log(user)
-
   return (
     <div>
-      {user ? <MainApp user={user} /> : <WelcomePage onClick={login} />}
+      {user ? <MainApp uid={user.uid} /> : <WelcomePage onClick={login} />}
     </div>
   )
 }
