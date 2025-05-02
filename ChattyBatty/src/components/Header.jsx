@@ -51,7 +51,7 @@ const Header = ({ photo, username }) => {
             className="dropdown-content menu bg-base-100 rounded-box z-1 w-22 p-2 shadow-sm"
           >
             <li>
-              <button class="btn btn-soft btn-primary" onClick={logout}>
+              <button className="btn btn-soft btn-primary" onClick={logout}>
                 Logout
               </button>
             </li>

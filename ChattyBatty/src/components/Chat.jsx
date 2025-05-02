@@ -1,18 +1,24 @@
+import { db } from '../firebaseConfig'
+import { collection, query, where, orderBy } from 'firebase/firestore'
+import { useCollection } from 'react-firebase-hooks/firestore'
+
+
 const ChatHeader = () => {
   return(
     <div className="navbar  ">
-      Hey
+      
       </div>
   )
 }
 
-const Message = () => {
+const Message = ({ photo }) => {
   return (
     <div> 
-        <div className="chat-image avatar w-10 rounded-full">
+
+        <div className=" avatar w-10 h-10 rounded-full object-cover">
           <img
             alt="Tailwind CSS chat bubble component"
-            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+            src={photo}
           />
         </div>
      
@@ -28,19 +34,31 @@ const Message = () => {
     
   )
 }
-const Chat = () => {
+const Chat = ({selectedChat}) => {
+
+  const q = query(collection(db, 'chat'.Document(selectedChat.chatId).collection('messages')))
+  const [snapshot, error] = useCollection(q)
+
+  const messages = snapshot?.docs.map(doc => ({
+    ...doc.data(),
+    id: doc.id,
+  })) 
+
+  console.log(messages)
+
+  const friend = selectedChat.friend
   return (
     <div className="flex flex-col h-full">
+      {friend.username}
       {/* Message list area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
-        <Message />
+        <Message photo={friend.photo}/>
         <Message />
         <Message />
       </div>
 
-      {/* Send message input */}
       <div className="p-4 border-t">
-        Send Message
+       <input placeholder="Enter a message" />
       </div>
     </div>
   );

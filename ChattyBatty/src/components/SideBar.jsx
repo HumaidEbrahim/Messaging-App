@@ -1,7 +1,4 @@
 import SearchBar from './SearchBar'
-import { db } from '../firebaseConfig'
-import { collection, query, where, orderBy } from 'firebase/firestore'
-import { useCollection } from 'react-firebase-hooks/firestore'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useFriends } from '../FriendContext' 
@@ -9,13 +6,14 @@ import Chat from './Chat'
 
 dayjs.extend(relativeTime)
 
-const ChatListItem = ({ chat, uid }) => {
+const ChatListItem = ({ chat, uid, setSelectedChat}) => {
+  
   const friends = useFriends()
   const friendId = chat.participants.find(p => p !== uid)
-  const friend = friends.find(friend => friend.id === friendId)
+  const friend = friends?.find(friend => friend.id === friendId)
 
   return (
-    <li onClick={() => console.log('Clicked',chat.id)}class="pb-3 sm:pb-4">
+    <li onClick={() => setSelectedChat({chatId : chat.id, friend:friend})}class="pb-3 sm:pb-4">
 
       <div class="flex items-center">
         <div class="shrink-0">
@@ -40,22 +38,11 @@ const ChatListItem = ({ chat, uid }) => {
   )
 }
 
-const SideBar = ({ uid }) => {
-  const q = query(
-    collection(db, 'chat'),
-    where('participants', 'array-contains', uid),
-  )
-
-  const [snapshot, error] = useCollection(q)
-
-  const chats = snapshot?.docs.map(doc => ({
-    ...doc.data(),
-    id: doc.id,
-  })) 
-
-  if (error) console.log(error.message)
+const SideBar = ({ chats, uid, setSelectedChat }) => {
+  
   if (!chats) return 'No chats'
 
+  console.log("chats",chats)
 
   return (
       <div className='flex overflow-y-auto bg-base-200 w-80'>
@@ -64,7 +51,7 @@ const SideBar = ({ uid }) => {
           <SearchBar />
 
           {chats.map((chat) => (
-            <ChatListItem key={chat.id} chat={chat} uid={uid} />
+            <ChatListItem key={chat.id} chat={chat} uid={uid} setSelectedChat={setSelectedChat} />
           ))}
         </ul>
       </div>

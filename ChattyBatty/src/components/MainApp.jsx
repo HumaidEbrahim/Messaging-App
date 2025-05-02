@@ -3,18 +3,38 @@ import FriendsList from './FriendsList'
 import Header from './Header'
 import Chat from './Chat'
 import { FriendProvider } from '../FriendContext'
-import { useDocumentData } from 'react-firebase-hooks/firestore'
+import { useDocumentData, useCollection } from 'react-firebase-hooks/firestore'
 import { db } from '../firebaseConfig'
-import { doc } from 'firebase/firestore'
+import { doc, collection, query, where, orderBy} from 'firebase/firestore'
+import { useState } from 'react'
 
 const MainApp = ({ uid }) => {
   const [user] = useDocumentData(doc(db, 'users', uid))
   console.log('user', user)
+  const [selectedChat, setSelectedChat] = useState(null)
+
+
+  // get chats
+  const chatQuery = query(
+    collection(db, 'chat'),
+    where('participants', 'array-contains', uid),
+  )
+
+  const [chatSnapshot] = useCollection(chatQuery
+
+  )
+
+  const chats = chatSnapshot?.docs.map(doc => ({
+    ...doc.data(),
+    id: doc.id,
+  })) 
+  
+
+  console.log('selected', selectedChat)
   if (!user) {
     return <div>Loading...</div>
   }
   
-
   return (
     <FriendProvider user={user}>
   
@@ -23,15 +43,15 @@ const MainApp = ({ uid }) => {
 
   <div className="flex flex-row flex-1">
     <div className="flex flex-1">
-      <SideBar uid={uid} />
+      <SideBar chats={chats} uid={uid} setSelectedChat={setSelectedChat} friendIds={user.friends} />
     </div>
     <div className="flex flex-2">
-      <Chat />
+      <Chat selectedChat={selectedChat}/>
     </div>
   </div>
 </div>
 
-    </FriendProvider>
+  </FriendProvider>
   )
 }
 
