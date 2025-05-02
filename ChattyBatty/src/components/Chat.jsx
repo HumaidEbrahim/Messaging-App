@@ -1,6 +1,10 @@
 import { db } from '../firebaseConfig'
 import { doc, collection, query, where, orderBy } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
 
 const BlankChat = () => {
  return( <div className="flex flex-col h-full">
@@ -37,7 +41,7 @@ const MessageReceived = ({  message, friend }) => {
       {/* Header */}
       <div className="flex items-center space-x-2 text-sm text-gray-700">
         <span className="font-medium">{friend.username}</span>
-        <time className="text-xs text-gray-400">12:00</time>
+        <time className="text-xs text-gray-400"> {dayjs(message.sentAt.toDate()).fromNow()}</time>
       </div>
   
       {/* Chat Bubble */}
@@ -60,7 +64,7 @@ const MessageSent = ({ message }) => {
         {/* Header */}
         <div className="flex items-center space-x-2 text-sm text-gray-700">
           <span className="font-medium">You</span>
-          <time className="text-xs text-gray-400">12:00</time>
+          <time className="text-xs text-gray-400">{dayjs(message.sentAt.toDate()).fromNow()}</time>
         </div>
 
         {/* Chat Bubble */}
@@ -79,7 +83,7 @@ const MessageSent = ({ message }) => {
 const Chat = ({selectedChat}) => {
 
   const q = selectedChat?
-   query(collection(doc(db, 'chat', selectedChat.chatId), 'messages'))
+   query(collection(doc(db, 'chat', selectedChat.chatId), 'messages'), orderBy('sentAt', 'asc'))
    :null
 
   const [snapshot, error] = useCollection(q)
@@ -99,7 +103,7 @@ const Chat = ({selectedChat}) => {
   if(!messages)
     return <div>Akward Silence</div>
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       {friend.username}
    
       <div className="flex-1 overflow-y-auto p-4 space-y-2">

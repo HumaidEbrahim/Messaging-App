@@ -16,24 +16,24 @@ const ChatListItem = ({ chat, uid, setSelectedChat}) => {
     return (<div>error</div>)
 
   return (
-    <li onClick={() => setSelectedChat({chatId : chat.id, friend:friend})}class="pb-3 sm:pb-4">
+    <li onClick={() => setSelectedChat({chatId : chat.id, friend:friend})}className="pb-3 sm:pb-4">
 
-      <div class="flex items-center">
-        <div class="shrink-0">
+      <div className="flex items-center">
+        <div className="shrink-0">
           <img
-            class="w-8 h-8 rounded-full object-cover"
+            className="w-8 h-8 rounded-full object-cover"
             src={friend.photo}
           />
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm">
+        <div  className="flex-1 min-w-0">
+          <p  className="text-sm">
             {friend.username}
           </p>
-          <p class="text-sm">
+          <p  className="text-sm">
             {chat.lastMessage.message}
           </p>
         </div>
-        <div class="inline-flex items-center">
+        <div  className="inline-flex items-center">
           {dayjs(chat.lastMessage.sentAt.toDate()).fromNow()}
         </div>
       </div>

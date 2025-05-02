@@ -7,6 +7,7 @@ import { useDocumentData, useCollection } from 'react-firebase-hooks/firestore'
 import { db } from '../firebaseConfig'
 import { doc, collection, query, where, orderBy} from 'firebase/firestore'
 import { useState } from 'react'
+import DetailBar from './DetailBar'
 
 const MainApp = ({ uid }) => {
   const [user] = useDocumentData(doc(db, 'users', uid))
@@ -42,12 +43,15 @@ const MainApp = ({ uid }) => {
   <div className="flex flex-col h-screen">
   <Header photo={user.photo} username={user.username} />
 
-  <div className="flex flex-row flex-1">
+  <div className="flex flex-row flex-1 overflow-hidden">
     <div className="flex flex-1">
       <SideBar chats={chats} uid={uid} setSelectedChat={setSelectedChat} friendIds={user.friends} />
     </div>
     <div className="flex flex-2">
       <Chat selectedChat={selectedChat}/>
+    </div>
+    <div className="flex flex-1">
+      <DetailBar selectedChat={selectedChat}/>
     </div>
   </div>
 </div>
