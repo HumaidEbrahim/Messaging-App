@@ -13,6 +13,7 @@ const MainApp = ({ uid }) => {
   console.log('user', user)
   const [selectedChat, setSelectedChat] = useState(null)
 
+  console.log("uid",uid)
 
   // get chats
   const chatQuery = query(

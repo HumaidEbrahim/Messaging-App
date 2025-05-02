@@ -12,6 +12,9 @@ const ChatListItem = ({ chat, uid, setSelectedChat}) => {
   const friendId = chat.participants.find(p => p !== uid)
   const friend = friends?.find(friend => friend.id === friendId)
 
+  if(!friend)
+    return (<div>error</div>)
+
   return (
     <li onClick={() => setSelectedChat({chatId : chat.id, friend:friend})}class="pb-3 sm:pb-4">
 

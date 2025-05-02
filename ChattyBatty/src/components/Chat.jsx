@@ -1,5 +1,5 @@
 import { db } from '../firebaseConfig'
-import { collection, query, where, orderBy } from 'firebase/firestore'
+import { doc, collection, query, where, orderBy } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
 
 
@@ -36,7 +36,10 @@ const Message = ({ photo }) => {
 }
 const Chat = ({selectedChat}) => {
 
-  const q = query(collection(db, 'chat'.Document(selectedChat.chatId).collection('messages')))
+  const q = selectedChat?
+   query(collection(doc(db, 'chat', selectedChat.chatId), 'messages'))
+   :null
+
   const [snapshot, error] = useCollection(q)
 
   const messages = snapshot?.docs.map(doc => ({
@@ -44,7 +47,10 @@ const Chat = ({selectedChat}) => {
     id: doc.id,
   })) 
 
-  console.log(messages)
+  console.log("messages",messages)
+
+  if(!selectedChat)
+    return <div>no chat selected </div>
 
   const friend = selectedChat.friend
   return (
