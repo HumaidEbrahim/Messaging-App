@@ -32,9 +32,9 @@ const Header = ({ photo, username }) => {
             </li>
           </ul>
         </div>
+        <h1 className="text-xl">ChattyBatty</h1>
       </div>
       <div className="navbar-center">
-        <h1 className="text-xl">ChattyBatty</h1>
       </div>
       <div className="navbar-end">
         <ThemeSelector />
