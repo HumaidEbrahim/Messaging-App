@@ -16,7 +16,7 @@ const DetailBar = ({ selectedChat }) => {
              <div className="flex justify-center">
 
              <div className="avatar avatar-online">
-             <div className="w-40 rounded-full">
+             <div className="w-30 rounded-full">
       
               <img src={friend.photo} />
               </div>

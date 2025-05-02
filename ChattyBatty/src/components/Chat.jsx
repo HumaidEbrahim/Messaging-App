@@ -1,8 +1,9 @@
 import { db } from '../firebaseConfig'
-import { doc, collection, query, where, orderBy } from 'firebase/firestore'
+import { doc, addDoc,collection, query, where, orderBy, serverTimestamp } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { useState } from 'react'
 
 dayjs.extend(relativeTime)
 
@@ -45,7 +46,7 @@ const MessageReceived = ({  message, friend }) => {
       </div>
   
       {/* Chat Bubble */}
-      <div className="chat-bubble bg-gray-100 text-black p-2 rounded-lg max-w-xs">
+      <div className="chat-bubble bg-secondary text-black p-2 rounded-lg max-w-xs">
         {message.message}
       </div>
   
@@ -64,11 +65,11 @@ const MessageSent = ({ message }) => {
         {/* Header */}
         <div className="flex items-center space-x-2 text-sm text-gray-700">
           <span className="font-medium">You</span>
-          <time className="text-xs text-gray-400">{dayjs(message.sentAt.toDate()).fromNow()}</time>
+          <time className="text-xs text-gray-400">{message?.sentAt?.toDate ? dayjs(message.sentAt.toDate()).fromNow() : 'Sending...'}</time>
         </div>
 
         {/* Chat Bubble */}
-        <div className="chat-bubble bg-blue-500 text-white p-2 rounded-lg">
+        <div className="chat-bubble bg-primary text-white p-2 rounded-lg">
           {message.message}
         </div>
 
@@ -80,7 +81,20 @@ const MessageSent = ({ message }) => {
 };
 
 
-const Chat = ({selectedChat}) => {
+const Chat = ({selectedChat, uid}) => {
+
+  const[newMessage, setNewMessage] = useState()
+
+  const sendMessage = async (event) => {
+    event.preventDefault()
+    const docRef = await addDoc(collection(db, 'chat', selectedChat.chatId, 'messages'), {
+      message: newMessage,
+      sentBy: uid,
+      sentAt: serverTimestamp()
+
+    })
+    console.log("newMessage",docRef)
+  }
 
   const q = selectedChat?
    query(collection(doc(db, 'chat', selectedChat.chatId), 'messages'), orderBy('sentAt', 'asc'))
@@ -103,22 +117,35 @@ const Chat = ({selectedChat}) => {
   if(!messages)
     return <div>Akward Silence</div>
   return (
-    <div className="flex flex-col h-full w-full">
-      {friend.username}
-   
+    <div className="flex flex-col  w-full">
+
+      <div className="p-4 font-bold border-b">{friend.username}</div>
+  
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
         {messages.map(message =>
-          ( message.sentBy === friend.id
-            ? <MessageReceived key={message.id} message={message} friend={friend} />
-            : <MessageSent  key={message.id} message={message} />
-          ))}
+          message.sentBy === friend.id ? (
+            <MessageReceived key={message.id} message={message} friend={friend} />
+          ) : (
+            <MessageSent key={message.id} message={message} />
+          )
+        )}
       </div>
-
-      <div className="p-4 border-t">
-       <input placeholder="Enter a message" />
-      </div>
+  
+ 
+      <form onSubmit={sendMessage} className="flex p-8 gap-2">
+        <input
+          className="flex-1 input p-8 border rounded"
+          placeholder="Enter a message"
+          value={newMessage}
+          onChange={event => setNewMessage(event.target.value)}
+        />
+        <button className="btn btn-primary px-4 py-8" type="submit">
+          Send
+        </button>
+      </form>
     </div>
   );
+  
 };
 
 

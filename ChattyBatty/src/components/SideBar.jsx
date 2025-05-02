@@ -48,7 +48,7 @@ const SideBar = ({ chats, uid, setSelectedChat }) => {
   console.log("chats",chats)
 
   return (
-      <div className='flex overflow-y-auto bg-base-200 w-80'>
+      <div className='flex overflow-y-auto bg-base-200 '>
         <ul className="menu  ">
           <h1 className="text-xl"> Chats </h1>
           <SearchBar />

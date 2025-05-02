@@ -42,13 +42,12 @@ const MainApp = ({ uid }) => {
   
   <div className="flex flex-col h-screen">
   <Header photo={user.photo} username={user.username} />
-
-  <div className="flex flex-row flex-1 overflow-hidden">
+  <div className="flex flex-row ">
     <div className="flex flex-1">
       <SideBar chats={chats} uid={uid} setSelectedChat={setSelectedChat} friendIds={user.friends} />
     </div>
-    <div className="flex flex-2">
-      <Chat selectedChat={selectedChat}/>
+    <div className="flex flex-3">
+      <Chat selectedChat={selectedChat} uid={uid}/>
     </div>
     <div className="flex flex-1">
       <DetailBar selectedChat={selectedChat}/>
