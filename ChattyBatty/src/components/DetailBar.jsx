@@ -5,38 +5,32 @@ const DetailBar = ({ selectedChat }) => {
 
     const friend = selectedChat.friend
 
-    return(
-   
-        <div className='flex flex-col bg-base-200 w-80'>
-             <h1 className="text-xl "> Details </h1>
-             
-             <div className="flex justify-center text-3xl">
-                {friend.username}
-           </div>
-             <div className="flex justify-center">
-
-             <div className="avatar avatar-online">
-             <div className="w-30 rounded-full">
+    return (
+        <div className=" bg-base-100  rounded-xl p-6  ">
+          <div className="flex flex-col items-center space-y-4">
+            
+            <div className="text-3xl font-medium">
+              {friend.username}
+            </div>
       
-              <img src={friend.photo} />
+            <div className="avatar online">
+              <div className="w-24 rounded-full">
+                <img src={friend.photo} alt="Friend avatar" />
               </div>
             </div>
+      
+            <div className="text-sm text-gray-500 italic">
+              {friend.status}
             </div>
-
-            <div className="flex justify-center">
-               
-        
-             {friend.status}
-             </div>
-
-             <div className="flex justify-center">
-             {friend.email}
-
-             </div>
-
-        </ div>
-     
-    )
+      
+            <div className="text-sm text-gray-600">
+              {friend.email}
+            </div>
+            
+          </div>
+        </div>
+      );
+      
 }
 
 export default DetailBar

@@ -48,9 +48,13 @@ const SideBar = ({ chats, uid, setSelectedChat }) => {
   console.log("chats",chats)
 
   return (
-      <div className='flex overflow-y-auto bg-base-200 '>
-        <ul className="menu  ">
-          <h1 className="text-xl"> Chats </h1>
+      <div className='p-1'>
+         <div role="tablist" className="tabs tabs-lift p-1">
+  <a role="tab" className="tab tab-active text-xl">Chats</a>
+  <a role="tab" className="tab text-xl">Friends</a>
+</div>
+        <ul className=" ">
+         
           <SearchBar />
 
           {chats.map((chat) => (

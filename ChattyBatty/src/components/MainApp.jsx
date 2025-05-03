@@ -39,25 +39,33 @@ const MainApp = ({ uid }) => {
   
   return (
     <FriendProvider user={user}>
-  
-  <div className="flex flex-col h-screen">
+  <div className='p-6 bg-base-300 '>
+    
+    <div className="grid grid-cols-5 grid-rows-[auto_1fr] gap-0.5 h-screen rounded-4xl overflow-hidden shadow-lg">
+
+    <div className="col-span-5">  
   <Header photo={user.photo} username={user.username} />
-  <div className="flex flex-row ">
-    <div className="flex flex-1">
+  </div>
+
+  
+    <div className="col-start-1 bg-base-100">
       <SideBar chats={chats} uid={uid} setSelectedChat={setSelectedChat} friendIds={user.friends} />
+      
     </div>
-    <div className="flex flex-3">
+
+    <div className="col-span-3 bg-base-100">
       <Chat selectedChat={selectedChat} uid={uid}/>
     </div>
-    <div className="flex flex-1">
+    
+    <div className="col-start-5 bg-base-100">
       {selectedChat?
        <DetailBar selectedChat={selectedChat}/>
       : null}
      
-    </div>
+     </div>
   </div>
-</div>
 
+</div>
   </FriendProvider>
   )
 }

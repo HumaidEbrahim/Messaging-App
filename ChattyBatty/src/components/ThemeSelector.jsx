@@ -24,7 +24,7 @@ const ThemeSelector = () => {
       <input
         type="radio"
         name="theme-dropdown"
-        className="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start"
+        className="theme-controller w-full btn btn-sm  btn-ghost justify-start"
         aria-label={name + emoji}
         value={name}
       />
@@ -32,7 +32,7 @@ const ThemeSelector = () => {
   )
 
   return (
-    <div className="dropdown mb-2">
+    <div className="dropdown btn-xs btn-primary mb-2">
       <div tabIndex={0} role="button" className="btn m-1">
         Theme
         <svg

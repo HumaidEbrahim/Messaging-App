@@ -117,34 +117,40 @@ const Chat = ({selectedChat, uid}) => {
   if(!messages)
     return <div>Akward Silence</div>
   return (
-    <div className="flex flex-col  w-full">
-
-      <div className="p-4 font-bold border-b">{friend.username}</div>
-  
-      <div className="flex-1 overflow-y-auto p-4 space-y-2">
-        {messages.map(message =>
-          message.sentBy === friend.id ? (
-            <MessageReceived key={message.id} message={message} friend={friend} />
-          ) : (
-            <MessageSent key={message.id} message={message} />
-          )
-        )}
-      </div>
-  
- 
-      <form onSubmit={sendMessage} className="flex p-8 gap-2">
-        <input
-          className="flex-1 input p-8 border rounded"
-          placeholder="Enter a message"
-          value={newMessage}
-          onChange={event => setNewMessage(event.target.value)}
-        />
-        <button className="btn btn-primary px-4 py-8" type="submit">
-          Send
-        </button>
-      </form>
+    <div className="flex flex-col h-full w-full overflow-hidden">
+    {/* Header */}
+    <div className="p-4 font-bold border-b shrink-0">
+      # {friend.username}
     </div>
+  
+    {/* Messages (scrollable) */}
+    <div className="flex-1 overflow-y-auto p-4 space-y-2">
+      {messages.map(message =>
+        message.sentBy === friend.id ? (
+          <MessageReceived key={message.id} message={message} friend={friend} />
+        ) : (
+          <MessageSent key={message.id} message={message} />
+        )
+      )}
+    </div>
+  
+    {/* Input */}
+    <form onSubmit={sendMessage} className="flex p-4 gap-2 border-t shrink-0">
+      <input
+        className="flex-1 input p-4 border rounded"
+        placeholder="Enter a message"
+        value={newMessage}
+        onChange={event => setNewMessage(event.target.value)}
+      />
+      <button className="btn btn-primary px-4 py-2" type="submit">
+        Send
+      </button>
+    </form>
+  </div>
+  
+  
   );
+  
   
 };
 
