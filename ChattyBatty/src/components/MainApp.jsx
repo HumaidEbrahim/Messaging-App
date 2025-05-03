@@ -50,7 +50,10 @@ const MainApp = ({ uid }) => {
       <Chat selectedChat={selectedChat} uid={uid}/>
     </div>
     <div className="flex flex-1">
-      <DetailBar selectedChat={selectedChat}/>
+      {selectedChat?
+       <DetailBar selectedChat={selectedChat}/>
+      : null}
+     
     </div>
   </div>
 </div>

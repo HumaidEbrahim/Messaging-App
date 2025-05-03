@@ -8,10 +8,10 @@ import { useState } from 'react'
 dayjs.extend(relativeTime)
 
 const BlankChat = () => {
- return( <div className="flex flex-col h-full">
+ return( <div className="flex flex-col h-full w-full ">
 
-    <div className='justify-center '> 
-      <p className='text-9xl'> Start Chatting </p>
+    <div className='flex flex-1 justify-center items-center'> 
+      <p className='text-3xl text-base-300 font-semibold '> ChattyBatty </p>
     </div>
 
     </div>)
@@ -61,7 +61,7 @@ const MessageReceived = ({  message, friend }) => {
 const MessageSent = ({ message }) => {
   return (
     <div className="flex justify-end">
-      <div className="flex flex-col items-end space-y-1 max-w-xs">
+      <div className="flex flex-col items-end space-y-1 max-w-xs pr-8">
         {/* Header */}
         <div className="flex items-center space-x-2 text-sm text-gray-700">
           <span className="font-medium">You</span>
