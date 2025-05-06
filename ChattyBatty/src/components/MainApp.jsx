@@ -64,7 +64,7 @@ const MainApp = ({ uid }) => {
   
           {/* Chat */}
           <div className="bg-base-100  col-span-1 md:col-span-2 lg:col-span-3">
-            {/* <Chat selectedChat={selectedChat} uid={uid} /> */}
+            {<Chat selectedChat={selectedChat} uid={uid} /> }
           </div>
   
           {/* Detail Bar */}

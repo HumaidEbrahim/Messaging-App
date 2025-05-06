@@ -135,12 +135,13 @@ const Chat = ({ selectedChat, uid }) => {
     id: doc.id,
   }))
 
+  /*
   //Suli Added this (Testing Scroll into Effect) This broke everything
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
   
-  
+  */
   
 
   console.log('messages', messages)
