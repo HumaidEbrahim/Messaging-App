@@ -8,6 +8,7 @@ import { db } from '../firebaseConfig'
 import { doc, collection, query, where, orderBy} from 'firebase/firestore'
 import { useState } from 'react'
 import DetailBar from './DetailBar'
+import Profile from './Profile'
 
 const MainApp = ({ uid }) => {
   const [user] = useDocumentData(doc(db, 'users', uid))
@@ -58,11 +59,12 @@ const MainApp = ({ uid }) => {
               setSelectedChat={setSelectedChat}
               friendIds={user.friends}
             />
+            <Profile user={user}/>
           </div>
   
           {/* Chat */}
           <div className="bg-base-100  col-span-1 md:col-span-2 lg:col-span-3">
-            <Chat selectedChat={selectedChat} uid={uid} />
+            {/* <Chat selectedChat={selectedChat} uid={uid} /> */}
           </div>
   
           {/* Detail Bar */}
