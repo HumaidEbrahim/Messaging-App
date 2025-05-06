@@ -159,10 +159,12 @@ const Chat = ({ selectedChat, uid }) => {
   if (!messages) return <div>Akward Silence</div>
 
   return (
-    <div className="flex flex-col h-full w-full max-h-screen ">
+    <div className="flex flex-col h-full w-full max-h-screen">
       {/* Header */}
       <div className="p-4 font-bold border-b shrink-0 bg-base-100 z-10"># {friend.username}</div>
-      <div className="flex-1  overflow-y-auto px-4 py-2 space-y-2 bg-base-200">
+      
+      {/* Messages container - flex-1 will make this take up remaining space */}
+      <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-base-200">
         {messages.map((message) =>
           message.sentBy === friend.id ? (
             <MessageReceived
@@ -174,23 +176,24 @@ const Chat = ({ selectedChat, uid }) => {
             <MessageSent key={message.id} message={message} />
           ),
         )}
-    <div ref={messagesEndRef} />
-
+        <div ref={messagesEndRef} />
       </div>
-
-      {/* Input */}
-      <form onSubmit={sendMessage} className=" flex items-end p-4 gap-2 border-t bg-base-100 shrink-0 border-2 ">
-        <TextareaAutosize
-          className="flex-1 textarea p-3 border rounded resize-none overflow-y-auto"
-          placeholder="Enter a message"
-          value={newMessage}
-          onChange={(event) => setNewMessage(event.target.value)}
-          minRows = {1}
-          maxRows = {6} // Maximum number of rows the Chat Grows 
-        />
-        <button className="btn btn-primary px-4 py-2" type="submit">
-          Send
-        </button>
+  
+      {/* Input - this will stay fixed at the bottom */}
+      <form onSubmit={sendMessage} className="w-full p-4 border-t bg-base-100 shrink-0">
+        <div className="flex items-end gap-2">
+          <TextareaAutosize
+            className="flex-1 textarea p-3 border rounded resize-none overflow-y-auto"
+            placeholder="Enter a message"
+            value={newMessage}
+            onChange={(event) => setNewMessage(event.target.value)}
+            minRows={1}
+            maxRows={6}
+          />
+          <button className="btn btn-primary px-4 py-2" type="submit">
+            Send
+          </button>
+        </div>
       </form>
     </div>
   )

@@ -38,46 +38,45 @@ const MainApp = ({ uid }) => {
     return <div>Loading...</div>
   }
   
+
   return (
     <FriendProvider user={user}>
-    <div className="h-screen p-4 box-border bg-base-300">
-      <div className="grid grid-rows-[auto_1fr] h-full rounded-4xl overflow-hidden shadow-lg">
+      <div className="h-screen p-4 box-border bg-base-300">
+        <div className="grid grid-rows-[auto_1fr] h-full rounded-4xl overflow-hidden shadow-lg">
+          {/* Header */}
+          <div>
+            <Header photo={user.photo} username={user.username} />
+          </div>
   
-        {/* Header */}
-        <div >
-          <Header photo={user.photo} username={user.username} />
+          {/* Main Content */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-0.5 h-full min-h-0">
+            {/* Sidebar */}
+            <div className="bg-base-100 hidden md:block overflow-y-auto">
+              <SideBar
+                chats={chats}
+                uid={uid}
+                setSelectedChat={setSelectedChat}
+                friendIds={user.friends}
+              />
+              <Profile user={user} />
+            </div>
+  
+            {/* Chat - Added min-h-0 and overflow handling */}
+            <div className="bg-base-100 col-span-1 md:col-span-2 lg:col-span-3 flex flex-col min-h-0">
+              {selectedChat && (
+                <Chat selectedChat={selectedChat} uid={uid} />
+              )}
+            </div>
+  
+            {/* Detail Bar */}
+            <div className="bg-base-100 overflow-y-auto hidden lg:block">
+              {selectedChat && <DetailBar selectedChat={selectedChat} />}
+            </div>
+          </div>
         </div>
-  
-        {/* Main Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-0.5 overflow-hidden ">
-          
-          {/* Sidebar */}
-          <div className="bg-base-100 hidden md:block">
-            <SideBar
-              chats={chats}
-              uid={uid}
-              setSelectedChat={setSelectedChat}
-              friendIds={user.friends}
-            />
-            <Profile user={user}/>
-          </div>
-  
-          {/* Chat */}
-          <div className="bg-base-100  col-span-1 md:col-span-2 lg:col-span-3">
-            {<Chat selectedChat={selectedChat} uid={uid} /> }
-          </div>
-  
-          {/* Detail Bar */}
-          <div className="bg-base-100 overflow-auto hidden lg:block">
-            {selectedChat ? <DetailBar selectedChat={selectedChat} /> : null}
-          </div>
-        </div>
-  
       </div>
-    </div>
-  </FriendProvider>
-  
-  )  
+    </FriendProvider>
+  );
 }
 
 export default MainApp
