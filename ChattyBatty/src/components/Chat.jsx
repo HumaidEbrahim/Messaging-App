@@ -14,7 +14,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useRef,useState,useEffect } from 'react' //Added UseRef and UseEffect for Scroll 
 import TextareaAutosize from 'react-textarea-autosize'//Makes the Chat grow as you type, like Discord
-//Humaid please remember to npm install react-textarea-autosize 
+import { IoIosSend } from "react-icons/io"
 
 dayjs.extend(relativeTime)
 
@@ -141,13 +141,13 @@ const Chat = ({ selectedChat, uid }) => {
     id: doc.id,
   }))
 
-  /*
+  
   //Suli Added this (Testing Scroll into Effect) This broke everything
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
   
-  */
+ 
   
 
   console.log('messages', messages)
@@ -161,7 +161,7 @@ const Chat = ({ selectedChat, uid }) => {
   return (
     <div className="flex flex-col h-full w-full max-h-screen">
       {/* Header */}
-      <div className="p-4 font-bold border-b shrink-0 bg-base-100 z-10"># {friend.username}</div>
+      <div className="p-4 font-bold border-b border-base-content/50 shrink-0 bg-base-100 z-10"># {friend.username}</div>
       
       {/* Messages container - flex-1 will make this take up remaining space */}
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-base-200">
@@ -180,19 +180,18 @@ const Chat = ({ selectedChat, uid }) => {
       </div>
   
       {/* Input - this will stay fixed at the bottom */}
-      <form onSubmit={sendMessage} className="w-full p-4 border-t bg-base-100 shrink-0">
+      <form onSubmit={sendMessage} className="w-full p-4 border-t  border-base-content/50 bg-base-100 shrink-0">
         <div className="flex items-end gap-2">
           <TextareaAutosize
-            className="flex-1 textarea p-3 border rounded resize-none overflow-y-auto"
+          
+            className="flex-1 textarea border rounded resize-none overflow-y-auto"
             placeholder="Enter a message"
             value={newMessage}
             onChange={(event) => setNewMessage(event.target.value)}
             minRows={1}
             maxRows={6}
           />
-          <button className="btn btn-primary px-4 py-2" type="submit">
-            Send
-          </button>
+         
         </div>
       </form>
     </div>
