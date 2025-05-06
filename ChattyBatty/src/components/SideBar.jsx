@@ -34,7 +34,9 @@ const ChatListItem = ({ chat, uid, setSelectedChat}) => {
           </p>
         </div>
         <div  className="inline-flex items-center">
-          {dayjs(chat.lastMessage.sentAt.toDate()).fromNow()}
+          {chat?.lastMessage?.sentAt ?  dayjs(chat?.lastMessage?.sentAt?.toDate()).fromNow()
+         : 'Sending...' }
+  
         </div>
       </div>
     </li>

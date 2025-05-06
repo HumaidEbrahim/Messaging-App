@@ -20,7 +20,7 @@ const ThemeSelector = () => {
   ]
 
   const ListItem = ({ name, emoji }) => (
-    <li>
+    <li onClick={handleThemeChange}>
       <input
         type="radio"
         name="theme-dropdown"

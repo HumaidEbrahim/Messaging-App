@@ -43,15 +43,15 @@ const MainApp = ({ uid }) => {
       <div className="grid grid-rows-[auto_1fr] h-full rounded-4xl overflow-hidden shadow-lg">
   
         {/* Header */}
-        <div>
+        <div >
           <Header photo={user.photo} username={user.username} />
         </div>
   
         {/* Main Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-0.5 overflow-hidden h-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-0.5 overflow-hidden ">
           
           {/* Sidebar */}
-          <div className="bg-base-100 overflow-auto hidden md:block">
+          <div className="bg-base-100 hidden md:block">
             <SideBar
               chats={chats}
               uid={uid}
@@ -61,7 +61,7 @@ const MainApp = ({ uid }) => {
           </div>
   
           {/* Chat */}
-          <div className="bg-base-100 overflow-auto col-span-1 md:col-span-2 lg:col-span-3">
+          <div className="bg-base-100  col-span-1 md:col-span-2 lg:col-span-3">
             <Chat selectedChat={selectedChat} uid={uid} />
           </div>
   

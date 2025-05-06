@@ -7,6 +7,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  updateDoc
 } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
 import dayjs from 'dayjs'
@@ -96,6 +97,8 @@ const Chat = ({ selectedChat, uid }) => {
 
   const sendMessage = async (event) => {
     event.preventDefault()
+    
+    // send message
     const docRef = await addDoc(
       collection(db, 'chat', selectedChat.chatId, 'messages'),
       {
@@ -104,6 +107,17 @@ const Chat = ({ selectedChat, uid }) => {
         sentAt: serverTimestamp(),
       },
     )
+
+    // update lastMessage 
+    await updateDoc(doc(db, 'chat', selectedChat.chatId),
+  {
+    lastMessage: {
+      message: newMessage,
+      sentBy: uid,
+      sentAt: serverTimestamp()
+    }
+  })
+
     console.log('newMessage', docRef)
   }
 
