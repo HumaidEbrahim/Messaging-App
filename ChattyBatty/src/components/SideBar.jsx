@@ -57,7 +57,7 @@ const NewChat = ({ chats, setSelectedChat, uid }) => {
 
 </div>
     <ul tabIndex={0} className="dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-xl">
-     {friends.map(friend =>  (<NewChatItem friend={friend} setSelectedChat={setSelectedChat} chats={chats} uid={uid}/>))}
+     {friends.map(friend =>  (<NewChatItem key={friend.id}friend={friend} setSelectedChat={setSelectedChat} chats={chats} uid={uid}/>))}
     </ul>
   </div>
   )
