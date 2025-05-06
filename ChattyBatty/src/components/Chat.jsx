@@ -11,7 +11,7 @@ import {
 import { useCollection } from 'react-firebase-hooks/firestore'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { useState } from 'react'
+import { useRef,useState,useEffect } from 'react' //Added UseRef and UseEffect for Scroll 
 
 dayjs.extend(relativeTime)
 
@@ -91,7 +91,8 @@ const MessageSent = ({ message }) => {
 }
 
 const Chat = ({ selectedChat, uid }) => {
-  const [newMessage, setNewMessage] = useState()
+  const [newMessage, setNewMessage] = useState('')
+  const messagesEndRef = useRef(null)
 
   const sendMessage = async (event) => {
     event.preventDefault()
@@ -120,6 +121,14 @@ const Chat = ({ selectedChat, uid }) => {
     id: doc.id,
   }))
 
+  //Suli Added this (Testing Scroll into Effect) This broke everything
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+  
+  
+  
+
   console.log('messages', messages)
 
   if (!selectedChat) return <BlankChat />
@@ -127,12 +136,12 @@ const Chat = ({ selectedChat, uid }) => {
   const friend = selectedChat.friend
 
   if (!messages) return <div>Akward Silence</div>
-  return (
-    <div className="flex flex-col h-full w-full ">
-      {/* Header */}
-      <div className="p-4 font-bold border-b shrink-0"># {friend.username}</div>
 
-      <div className="flex-1  p-4 space-y-2">
+  return (
+    <div className="flex flex-col h-screen w-full ">
+      {/* Header */}
+      <div className="p-4 font-bold border-b shrink-0 bg-base-100 z-10"># {friend.username}</div>
+      <div className="flex-1  overflow-y-auto px-4 py-2 space-y-2 bg-base-200">
         {messages.map((message) =>
           message.sentBy === friend.id ? (
             <MessageReceived
@@ -144,17 +153,19 @@ const Chat = ({ selectedChat, uid }) => {
             <MessageSent key={message.id} message={message} />
           ),
         )}
+    <div ref={messagesEndRef} />
+
       </div>
 
       {/* Input */}
-      <form onSubmit={sendMessage} className="flex p-4 gap-2 border-t shrink-0">
+      <form onSubmit={sendMessage} className=" flex p-4 gap-2 border-t shrink-0 bg-base-100 shrink-0 ">
         <input
           className="flex-1 input p-6 border rounded"
           placeholder="Enter a message"
           value={newMessage}
           onChange={(event) => setNewMessage(event.target.value)}
         />
-        <button className="btn btn-primary px-4 py-6" type="submit">
+        <button className="btn btn-primary px-4 py-2" type="submit">
           Send
         </button>
       </form>

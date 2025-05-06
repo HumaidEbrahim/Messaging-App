@@ -15,29 +15,27 @@ export const FriendProvider = ({ user, children }) => {
     const fetchFriends = async () => {
       try {
         setLoading(true)
-
+        
         // Create an array of promises for each friend document
-        const friendPromises = friendIds.map((id) => {
+        const friendPromises = friendIds.map(id => {
           const docRef = doc(db, 'users', id)
           return getDoc(docRef)
         })
-
+        
         // Wait for all promises to resolve
         const friendDocs = await Promise.all(friendPromises)
-
+        
         // Map the documents to the required format
-        const friendsData = friendDocs
-          .map((doc) => {
-            if (doc.exists()) {
-              return {
-                ...doc.data(),
-                id: doc.id,
-              }
+        const friendsData = friendDocs.map(doc => {
+          if (doc.exists()) {
+            return {
+              ...doc.data(),
+              id: doc.id
             }
-            return null
-          })
-          .filter(Boolean) // Remove any null values (documents that don't exist)
-
+          }
+          return null
+        }).filter(Boolean) // Remove any null values (documents that don't exist)
+        
         console.log('friendsafterquery', friendsData)
         setFriends(friendsData)
       } catch (err) {
@@ -58,7 +56,7 @@ export const FriendProvider = ({ user, children }) => {
   }, [friendIds]) // Re-fetch when friendIds change
 
   console.log('Query state:', { loading, friendsCount: friends.length })
-
+  
   if (error) console.log(error.message)
 
   return (
