@@ -158,7 +158,7 @@ const Chat = ({ selectedChat, uid }) => {
       </div>
 
       {/* Input */}
-      <form onSubmit={sendMessage} className=" flex p-4 gap-2 border-t shrink-0 bg-base-100 shrink-0 ">
+      <form onSubmit={sendMessage} className=" flex p-4 gap-2 border-t bg-base-100 shrink-0 ">
         <input
           className="flex-1 input p-6 border rounded"
           placeholder="Enter a message"

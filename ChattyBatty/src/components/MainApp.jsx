@@ -39,35 +39,43 @@ const MainApp = ({ uid }) => {
   
   return (
     <FriendProvider user={user}>
-  <div className='p-6 bg-base-300 '>
-    
-    <div className="grid grid-cols-5 grid-rows-[auto_1fr] gap-0.5 h-screen rounded-4xl overflow-hidden shadow-lg">
-
-    <div className="col-span-5">  
-  <Header photo={user.photo} username={user.username} />
-  </div>
-
+    <div className="h-screen p-4 box-border bg-base-300">
+      <div className="grid grid-rows-[auto_1fr] h-full rounded-4xl overflow-hidden shadow-lg">
   
-    <div className="col-start-1 bg-base-100">
-      <SideBar chats={chats} uid={uid} setSelectedChat={setSelectedChat} friendIds={user.friends} />
-      
+        {/* Header */}
+        <div>
+          <Header photo={user.photo} username={user.username} />
+        </div>
+  
+        {/* Main Content */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-0.5 overflow-hidden h-full">
+          
+          {/* Sidebar */}
+          <div className="bg-base-100 overflow-auto hidden md:block">
+            <SideBar
+              chats={chats}
+              uid={uid}
+              setSelectedChat={setSelectedChat}
+              friendIds={user.friends}
+            />
+          </div>
+  
+          {/* Chat */}
+          <div className="bg-base-100 overflow-auto col-span-1 md:col-span-2 lg:col-span-3">
+            <Chat selectedChat={selectedChat} uid={uid} />
+          </div>
+  
+          {/* Detail Bar */}
+          <div className="bg-base-100 overflow-auto hidden lg:block">
+            {selectedChat ? <DetailBar selectedChat={selectedChat} /> : null}
+          </div>
+        </div>
+  
+      </div>
     </div>
-
-    <div className="col-span-3 bg-base-100">
-      <Chat selectedChat={selectedChat} uid={uid}/>
-    </div>
-    
-    <div className="col-start-5 bg-base-100">
-      {selectedChat?
-       <DetailBar selectedChat={selectedChat}/>
-      : null}
-     
-     </div>
-  </div>
-
-</div>
   </FriendProvider>
-  )
+  
+  )  
 }
 
 export default MainApp
