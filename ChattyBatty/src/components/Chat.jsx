@@ -13,6 +13,8 @@ import { useCollection } from 'react-firebase-hooks/firestore'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useRef,useState,useEffect } from 'react' //Added UseRef and UseEffect for Scroll 
+import TextareaAutosize from 'react-textarea-autosize'//Makes the Chat grow as you type, like Discord
+//Humaid please remember to npm install react-textarea-autosize 
 
 dayjs.extend(relativeTime)
 
@@ -54,7 +56,7 @@ const MessageReceived = ({ message, friend }) => {
         </div>
 
         {/* Chat Bubble */}
-        <div className="chat-bubble bg-secondary text-black p-2 rounded-lg max-w-xs">
+        <div className="chat-bubble bg-secondary text-black p-3 rounded-lg max-w-[100%] break-words whitespace-pre-wrap">
           {message.message}
         </div>
 
@@ -80,7 +82,7 @@ const MessageSent = ({ message }) => {
         </div>
 
         {/* Chat Bubble */}
-        <div className="chat-bubble bg-primary text-white p-2 rounded-lg">
+        <div className="chat-bubble bg-primary text-black p-3 rounded-lg max-w-[100%] break-words whitespace-pre-wrap">  
           {message.message}
         </div>
 
@@ -97,6 +99,8 @@ const Chat = ({ selectedChat, uid }) => {
 
   const sendMessage = async (event) => {
     event.preventDefault()
+
+    if (!newMessage.trim()) return // Prevent sending empty messages
     
     // send message
     const docRef = await addDoc(
@@ -117,8 +121,10 @@ const Chat = ({ selectedChat, uid }) => {
       sentAt: serverTimestamp()
     }
   })
-
+    
     console.log('newMessage', docRef)
+    setNewMessage('') // Clear input field
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
   const q = selectedChat
@@ -135,13 +141,7 @@ const Chat = ({ selectedChat, uid }) => {
     id: doc.id,
   }))
 
-  //Suli Added this (Testing Scroll into Effect) This broke everything
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
-  
-  
-  
+
 
   console.log('messages', messages)
 
@@ -152,7 +152,7 @@ const Chat = ({ selectedChat, uid }) => {
   if (!messages) return <div>Akward Silence</div>
 
   return (
-    <div className="flex flex-col h-screen w-full ">
+    <div className="flex flex-col h-full w-full max-h-screen ">
       {/* Header */}
       <div className="p-4 font-bold border-b shrink-0 bg-base-100 z-10"># {friend.username}</div>
       <div className="flex-1  overflow-y-auto px-4 py-2 space-y-2 bg-base-200">
@@ -172,12 +172,14 @@ const Chat = ({ selectedChat, uid }) => {
       </div>
 
       {/* Input */}
-      <form onSubmit={sendMessage} className=" flex p-4 gap-2 border-t bg-base-100 shrink-0 ">
-        <input
-          className="flex-1 input p-6 border rounded"
+      <form onSubmit={sendMessage} className=" flex items-end p-4 gap-2 border-t bg-base-100 shrink-0 border-2 ">
+        <TextareaAutosize
+          className="flex-1 textarea p-3 border rounded resize-none overflow-y-auto"
           placeholder="Enter a message"
           value={newMessage}
           onChange={(event) => setNewMessage(event.target.value)}
+          minRows = {1}
+          maxRows = {6} // Maximum number of rows the Chat Grows 
         />
         <button className="btn btn-primary px-4 py-2" type="submit">
           Send
