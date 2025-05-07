@@ -191,7 +191,9 @@ const Chat = ({ selectedChat, uid }) => {
             minRows={1}
             maxRows={6}
           />
-         
+         <button className="btn btn-primary px-4 py-4" type="submit">
+         <IoIosSend />
+          </button>
         </div>
       </form>
     </div>
