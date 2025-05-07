@@ -101,6 +101,8 @@ const NewChatItem = ({friend, setSelectedChat, chats, uid}) => {
 
 const SideBar = ({ chats, uid, setSelectedChat }) => {
   
+  const [selectedSideBar, setSetlectedSideBar] = useState('chats')
+
   if (!chats) return 'No chats'
 
   console.log("chats",chats)
