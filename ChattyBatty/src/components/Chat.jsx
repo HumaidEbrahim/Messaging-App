@@ -4,6 +4,7 @@ import {
   addDoc,
   collection,
   query,
+  where,
   orderBy,
   serverTimestamp,
   updateDoc
@@ -37,6 +38,7 @@ const ChatHeader = () => {
 const MessageReceived = ({ message, friend }) => {
   return (
     <div className="flex items-start space-x-3">
+            {/* Avatar */}
       <div className="w-10 h-10 rounded-full overflow-hidden">
         <img
           src={friend.photo}
@@ -44,16 +46,22 @@ const MessageReceived = ({ message, friend }) => {
           className="w-full h-full object-cover"
         />
       </div>
+      {/* Message Content */}
       <div className="flex flex-col space-y-1">
+                {/* Header */}
         <div className="flex items-center space-x-2 text-sm text-gray-700">
           <span className="font-medium">{friend.username}</span>
           <time className="text-xs text-gray-400">
             {dayjs(message.sentAt.toDate()).fromNow()}
           </time>
+          
+        {/* Chat Bubble */}
         </div>
         <div className="chat-bubble bg-secondary text-black p-3 rounded-lg max-w-[100%] break-words whitespace-pre-wrap">
           {message.message}
         </div>
+        
+        {/* Footer */}
         <div className="text-xs text-gray-400">Delivered</div>
       </div>
     </div>
@@ -71,10 +79,14 @@ const MessageSent = ({ message }) => {
               ? dayjs(message.sentAt.toDate()).fromNow()
               : 'Sending...'}
           </time>
+          
+        {/* Chat Bubble */}
         </div>
         <div className="chat-bubble bg-primary text-black p-3 rounded-lg max-w-[100%] break-words whitespace-pre-wrap">
           {message.message}
         </div>
+        
+        {/* Footer */}
         <div className="text-xs text-gray-400">Delivered</div>
       </div>
     </div>
@@ -110,7 +122,7 @@ const Chat = ({ selectedChat, uid }) => {
 
     setNewMessage('')
     setShowEmojiPicker(false)
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block:'end' })
   }
 
   const q = selectedChat
@@ -132,9 +144,17 @@ const Chat = ({ selectedChat, uid }) => {
     setShowEmojiPicker(false) // Hide picker after selection
   }
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  const [hasOpened, setHasOpened] = useState(false)
+
+useEffect(() => {
+  if (!hasOpened && messages?.length > 0) {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' })
+    }, 100)
+    setHasOpened(true)
+  }
+}, [messages, hasOpened])
+
 
   if (!selectedChat) return <BlankChat />
 
