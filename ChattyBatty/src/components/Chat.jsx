@@ -14,7 +14,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { useRef, useState, useEffect } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { IoIosSend } from "react-icons/io"
-import EmojiPicker from 'emoji-picker-react'
+import EmojiPicker, { EmojiStyle } from 'emoji-picker-react'
 import { FaSmile } from "react-icons/fa"
 import { IoMdAttach } from "react-icons/io"
 
@@ -170,6 +170,7 @@ const Chat = ({ selectedChat, uid }) => {
             onEmojiClick={onEmojiClick}
             theme="dark"
             autoFocusSearch={false}
+            emojiStyle={EmojiStyle.NATIVE}
           />
         </div>
       )}
