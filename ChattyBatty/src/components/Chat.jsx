@@ -36,6 +36,7 @@ const ChatHeader = () => {
 }
 
 const MessageReceived = ({ message, friend }) => {
+  const sentAt = dayjs(message.sentAt.toDate())
   return (
     <div className="flex items-start space-x-3">
             {/* Avatar */}
@@ -50,9 +51,11 @@ const MessageReceived = ({ message, friend }) => {
       <div className="flex flex-col space-y-1">
                 {/* Header */}
         <div className="flex items-center space-x-2 text-sm text-gray-700">
-          <span className="font-medium">{friend.username}</span>
+          <span className="font-semibold text-white text-base">{friend.username}</span>
           <time className="text-xs text-gray-400">
-            {dayjs(message.sentAt.toDate()).fromNow()}
+            {message?.sentAt?.toDate
+              ? dayjs(message.sentAt.toDate()).format('h:mm A')
+              : 'Sending...'}
           </time>
           
         {/* Chat Bubble */}
@@ -62,21 +65,22 @@ const MessageReceived = ({ message, friend }) => {
         </div>
         
         {/* Footer */}
-        <div className="text-xs text-gray-400">Delivered</div>
+
       </div>
     </div>
   )
 }
 
 const MessageSent = ({ message }) => {
+  const sentAt = message.sentAt?.toDate ? dayjs(message.sentAt.toDate()) : null
   return (
     <div className="flex justify-end">
       <div className="flex flex-col space-y-1 items-end">
         <div className="flex items-center space-x-2 text-sm text-gray-700">
-          <span className="font-medium">You</span>
+          <span className="font semibold text-white text-base ">You</span>
           <time className="text-xs text-gray-400">
             {message?.sentAt?.toDate
-              ? dayjs(message.sentAt.toDate()).fromNow()
+              ? dayjs(message.sentAt.toDate()).format('h:mm A')
               : 'Sending...'}
           </time>
           
@@ -87,11 +91,29 @@ const MessageSent = ({ message }) => {
         </div>
         
         {/* Footer */}
-        <div className="text-xs text-gray-400">Delivered</div>
+
       </div>
     </div>
   )
 }
+
+const DateSeparator = ({ date }) => {
+  const now = dayjs()
+  const formattedDate = date.isSame(now, 'day')
+    ? 'Today'
+    : date.isSame(now.subtract(1, 'day'), 'day')
+    ? 'Yesterday'
+    : date.format('MMM D, YYYY')
+
+    return (
+      <div className="flex items-center my-6">
+        <div className="flex-grow border-t border-gray-600"></div>
+        <span className="mx-4 text-xs text-gray-300 font-medium ">{formattedDate}</span>
+        <div className="flex-grow border-t border-gray-600"></div>
+      </div>
+    )
+}
+
 
 const Chat = ({ selectedChat, uid }) => {
   const [newMessage, setNewMessage] = useState('')
@@ -169,17 +191,25 @@ useEffect(() => {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-base-200">
-        {messages.map((message) =>
-          message.sentBy === friend.id ? (
-            <MessageReceived
-              key={message.id}
-              message={message}
-              friend={friend}
-            />
-          ) : (
-            <MessageSent key={message.id} message={message} />
-          )
-        )}
+      {messages.map((message, index) => {
+  const prev = messages[index - 1]
+  const currentDate = dayjs(message.sentAt.toDate())
+  const showDate =
+    !prev ||
+    !dayjs(prev.sentAt.toDate()).isSame(currentDate, 'day')
+
+  return (
+    <div key={message.id}>
+      {showDate && <DateSeparator date={currentDate} />}
+      {message.sentBy === friend.id ? (
+        <MessageReceived message={message} friend={friend} />
+      ) : (
+        <MessageSent message={message} />
+      )}
+    </div>
+  )
+})}
+
         <div ref={messagesEndRef} />
       </div>
 
