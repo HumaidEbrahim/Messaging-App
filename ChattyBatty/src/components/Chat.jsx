@@ -71,7 +71,7 @@ const MessageReceived = ({ message, friend }) => {
 const MessageSent = ({ message }) => {
   return (
     <div className="flex justify-end">
-      <div className="flex flex-col space-y-1">
+      <div className="flex flex-col space-y-1 items-end">
         <div className="flex items-center space-x-2 text-sm text-gray-700">
           <span className="font-medium">You</span>
           <time className="text-xs text-gray-400">
@@ -198,13 +198,18 @@ useEffect(() => {
       {/* Input form */}
       <form
         onSubmit={sendMessage}
+        onClick={() => setShowEmojiPicker(false)}
+
         className="w-full px-4 py-2 bg-base-100 border-t border-base-content/50"
       >
         <div className="flex items-center gap-2 bg-base-200 rounded-full px-3 py-2">
           <button
             type="button"
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-300 text-xl"
-            onClick={() => setShowEmojiPicker((prev) => !prev)}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevents click from bubbling to form, stop propagation
+              setShowEmojiPicker((prev) => !prev);
+            }}
           >
             <FaSmile />
           </button>
@@ -221,6 +226,7 @@ useEffect(() => {
             placeholder="Type a message"
             value={newMessage}
             onChange={(event) => setNewMessage(event.target.value)}
+            onFocus={() => setShowEmojiPicker(false)}
             minRows={1}
             maxRows={6}
           />
