@@ -12,7 +12,7 @@ const Header = ({ photo, username }) => {
         <ThemeSelector />
       </div>
     </div>
-  );
+  )
 }
 
 export default Header

@@ -6,18 +6,17 @@ import {
   query,
   where,
   orderBy,
-  serverTimestamp,
-  updateDoc
+  serverTimestamp,  updateDoc,
 } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useRef, useState, useEffect } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
-import { IoIosSend } from "react-icons/io"
+import { IoIosSend } from 'react-icons/io'
 import EmojiPicker, { EmojiStyle } from 'emoji-picker-react'
-import { FaSmile } from "react-icons/fa"
-import { IoMdAttach } from "react-icons/io"
+import { FaSmile } from 'react-icons/fa'
+import { IoMdAttach } from 'react-icons/io'
 
 dayjs.extend(relativeTime)
 
@@ -39,7 +38,7 @@ const MessageReceived = ({ message, friend }) => {
   const sentAt = dayjs(message.sentAt.toDate())
   return (
     <div className="flex items-start space-x-3">
-            {/* Avatar */}
+      {/* Avatar */}
       <div className="w-10 h-10 rounded-full overflow-hidden">
         <img
           src={friend.photo}
@@ -49,23 +48,24 @@ const MessageReceived = ({ message, friend }) => {
       </div>
       {/* Message Content */}
       <div className="flex flex-col space-y-1">
-                {/* Header */}
+        {/* Header */}
         <div className="flex items-center space-x-2 text-sm text-gray-700">
-          <span className="font-semibold text-white text-base">{friend.username}</span>
+          <span className="font-semibold text-white text-base">
+            {friend.username}
+          </span>
           <time className="text-xs text-gray-400">
             {message?.sentAt?.toDate
               ? dayjs(message.sentAt.toDate()).format('h:mm A')
               : 'Sending...'}
           </time>
-          
-        {/* Chat Bubble */}
+
+          {/* Chat Bubble */}
         </div>
         <div className="chat-bubble bg-secondary text-black p-3 rounded-lg max-w-[100%] break-words whitespace-pre-wrap">
           {message.message}
         </div>
-        
-        {/* Footer */}
 
+        {/* Footer */}
       </div>
     </div>
   )
@@ -83,15 +83,14 @@ const MessageSent = ({ message }) => {
               ? dayjs(message.sentAt.toDate()).format('h:mm A')
               : 'Sending...'}
           </time>
-          
-        {/* Chat Bubble */}
+
+          {/* Chat Bubble */}
         </div>
         <div className="chat-bubble bg-primary text-black p-3 rounded-lg max-w-[100%] break-words whitespace-pre-wrap">
           {message.message}
         </div>
-        
-        {/* Footer */}
 
+        {/* Footer */}
       </div>
     </div>
   )
@@ -102,18 +101,19 @@ const DateSeparator = ({ date }) => {
   const formattedDate = date.isSame(now, 'day')
     ? 'Today'
     : date.isSame(now.subtract(1, 'day'), 'day')
-    ? 'Yesterday'
-    : date.format('MMM D, YYYY')
+      ? 'Yesterday'
+      : date.format('MMM D, YYYY')
 
-    return (
-      <div className="flex items-center my-6">
-        <div className="flex-grow border-t border-gray-600"></div>
-        <span className="mx-4 text-xs text-gray-300 font-medium ">{formattedDate}</span>
-        <div className="flex-grow border-t border-gray-600"></div>
-      </div>
-    )
+  return (
+    <div className="flex items-center my-6">
+      <div className="flex-grow border-t border-gray-600"></div>
+      <span className="mx-4 text-xs text-gray-300 font-medium ">
+        {formattedDate}
+      </span>
+      <div className="flex-grow border-t border-gray-600"></div>
+    </div>
+  )
 }
-
 
 const Chat = ({ selectedChat, uid }) => {
   const [newMessage, setNewMessage] = useState('')
@@ -131,26 +131,26 @@ const Chat = ({ selectedChat, uid }) => {
         message: newMessage,
         sentBy: uid,
         sentAt: serverTimestamp(),
-      }
+      },
     )
 
     await updateDoc(doc(db, 'chat', selectedChat.chatId), {
       lastMessage: {
         message: newMessage,
         sentBy: uid,
-        sentAt: serverTimestamp()
-      }
+        sentAt: serverTimestamp(),
+      },
     })
 
     setNewMessage('')
     setShowEmojiPicker(false)
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block:'end' })
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
 
   const q = selectedChat
     ? query(
         collection(doc(db, 'chat', selectedChat.chatId), 'messages'),
-        orderBy('sentAt', 'asc')
+        orderBy('sentAt', 'asc'),
       )
     : null
 
@@ -168,15 +168,17 @@ const Chat = ({ selectedChat, uid }) => {
 
   const [hasOpened, setHasOpened] = useState(false)
 
-useEffect(() => {
-  if (!hasOpened && messages?.length > 0) {
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' })
-    }, 100)
-    setHasOpened(true)
-  }
-}, [messages, hasOpened])
-
+  useEffect(() => {
+    if (!hasOpened && messages?.length > 0) {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({
+          behavior: 'auto',
+          block: 'end',
+        })
+      }, 100)
+      setHasOpened(true)
+    }
+  }, [messages, hasOpened])
 
   if (!selectedChat) return <BlankChat />
 
@@ -191,24 +193,23 @@ useEffect(() => {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-base-200">
-      {messages.map((message, index) => {
-  const prev = messages[index - 1]
-  const currentDate = dayjs(message.sentAt.toDate())
-  const showDate =
-    !prev ||
-    !dayjs(prev.sentAt.toDate()).isSame(currentDate, 'day')
+        {messages.map((message, index) => {
+          const prev = messages[index - 1]
+          const currentDate = dayjs(message.sentAt.toDate())
+          const showDate =
+            !prev || !dayjs(prev.sentAt.toDate()).isSame(currentDate, 'day')
 
-  return (
-    <div key={message.id}>
-      {showDate && <DateSeparator date={currentDate} />}
-      {message.sentBy === friend.id ? (
-        <MessageReceived message={message} friend={friend} />
-      ) : (
-        <MessageSent message={message} />
-      )}
-    </div>
-  )
-})}
+          return (
+            <div key={message.id}>
+              {showDate && <DateSeparator date={currentDate} />}
+              {message.sentBy === friend.id ? (
+                <MessageReceived message={message} friend={friend} />
+              ) : (
+                <MessageSent message={message} />
+              )}
+            </div>
+          )
+        })}
 
         <div ref={messagesEndRef} />
       </div>
@@ -229,7 +230,6 @@ useEffect(() => {
       <form
         onSubmit={sendMessage}
         onClick={() => setShowEmojiPicker(false)}
-
         className="w-full px-4 py-2 bg-base-100 border-t border-base-content/50"
       >
         <div className="flex items-center gap-2 bg-base-200 rounded-full px-3 py-2">
@@ -237,8 +237,8 @@ useEffect(() => {
             type="button"
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-300 text-xl"
             onClick={(e) => {
-              e.stopPropagation(); // Prevents click from bubbling to form, stop propagation
-              setShowEmojiPicker((prev) => !prev);
+              e.stopPropagation() // Prevents click from bubbling to form, stop propagation
+              setShowEmojiPicker((prev) => !prev)
             }}
           >
             <FaSmile />

@@ -17,6 +17,7 @@ const login = async () => {
       photo: user.photoURL,
       creationDate: serverTimestamp(),
       friends: [],
+      email: user.email,
     })
   }
 }
