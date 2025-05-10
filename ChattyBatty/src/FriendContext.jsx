@@ -62,4 +62,5 @@ export const FriendProvider = ({ user, children }) => {
   )
 }
 
-export const useFriends = () => useContext(FriendContext)
+export default  FriendContext
+

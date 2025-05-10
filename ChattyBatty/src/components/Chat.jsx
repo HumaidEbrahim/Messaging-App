@@ -18,6 +18,7 @@ import EmojiPicker, { EmojiStyle } from 'emoji-picker-react'
 import { FaSmile } from 'react-icons/fa'
 import { IoMdAttach } from 'react-icons/io'
 
+
 dayjs.extend(relativeTime)
 
 const BlankChat = () => {

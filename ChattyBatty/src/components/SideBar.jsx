@@ -1,7 +1,6 @@
 import SearchBar from './SearchBar'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { useFriends } from '../FriendContext'
 import Chat from './Chat'
 import {
   doc,
@@ -16,15 +15,16 @@ import {
 } from 'firebase/firestore'
 import { db } from '../firebaseConfig'
 import { BiSolidMessageAdd, BiUserPlus } from 'react-icons/bi'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { LuUsers, LuMessagesSquare } from "react-icons/lu"
 import { MdGroupAdd } from "react-icons/md"
 import { CgAddR } from "react-icons/cg"
+import FriendContext from "../FriendContext"
 
 dayjs.extend(relativeTime)
 
 const ChatListItem = ({ chat, uid, setSelectedChat }) => {
-  const friends = useFriends()
+  const friends = useContext(FriendContext)
   const friendId = chat.participants.find((p) => p !== uid)
   const friend = friends?.find((friend) => friend.id === friendId)
 
@@ -133,7 +133,7 @@ const NewChatItem = ({ friend, setSelectedChat, chats, uid }) => {
 
 
 const NewChat = ({ chats, setSelectedChat, uid }) => {
-  const friends = useFriends()
+  const friends = useContext(FriendContext)
 
   return (
     <div className="dropdown dropdown-bottom dropdown-end ">
@@ -188,7 +188,7 @@ const NewGroupChatItem = ({ friend, setGroupMembers, groupMembers}) => {
 }
 
 const NewGroupChat = ({ chats, setSelectedChat, uid }) => {
-   const friends = useFriends()
+   const friends = useContext(FriendContext)
    const [groupMembers, setGroupMembers] = useState([uid])
    const [groupName, setGroupName] = useState('Group Chat')
 
@@ -368,7 +368,7 @@ const NewFriend = ({ uid }) => {
 
 
 const FriendList = ({ uid }) => {
-  const friends = useFriends()
+  const friends = useContext(FriendContext)
 
   return (
     <>
