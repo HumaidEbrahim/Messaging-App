@@ -11,6 +11,7 @@ const Profile = ({ user }) => {
         <img
           className="w-10 h-10  rounded-full object-cover"
           src={user.photo}
+          referrerPolicy='no-referrer'
         />
 
         <ul

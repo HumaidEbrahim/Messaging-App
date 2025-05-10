@@ -40,6 +40,7 @@ const ChatListItem = ({ chat, uid, setSelectedChat }) => {
           <img
             className="w-10 h-10  rounded-full object-cover"
             src={chat.isGroup? chat.groupPhoto : friend.photo}
+            referrerPolicy='no-referrer'
           />
         </div>
         <div className="flex-1 min-w-0">
