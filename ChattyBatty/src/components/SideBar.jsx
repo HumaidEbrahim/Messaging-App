@@ -60,16 +60,27 @@ const ChatListItem = ({ chat, uid, setSelectedChat }) => {
 }
 
 const ChatList = ({ chats, uid, setSelectedChat }) => {
+  const [searchTerm, setSearchTerm] = useState('')
+     const friends = useContext(FriendContext)
+
+  const filteredChats = chats.filter((chat) => {
+    const friendId = chat.participants.find((p) => p !== uid)
+ 
+    const friend = friends?.find((friend) => friend.id === friendId)
+
+    const name = chat.isGroup ? chat.groupName : friend?.username || ''
+    return name.toLowerCase().includes(searchTerm.toLowerCase())
+  })
+
   return (
     <div>
       <div className="flex flex-row">
-        <SearchBar />
-
+        <SearchBar onSearch={setSearchTerm} />
         <NewChat chats={chats} setSelectedChat={setSelectedChat} uid={uid} />
-         <NewGroupChat chats={chats} setSelectedChat={setSelectedChat} uid={uid} />
+        <NewGroupChat chats={chats} setSelectedChat={setSelectedChat} uid={uid} />
       </div>
-      <ul className=" ">
-        {chats.map((chat) => (
+      <ul>
+        {filteredChats.map((chat) => (
           <ChatListItem
             key={chat.id}
             chat={chat}
@@ -370,23 +381,29 @@ const NewFriend = ({ uid }) => {
 
 const FriendList = ({ uid }) => {
   const friends = useContext(FriendContext)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredFriends = friends.filter((friend) => {
+    return friend.username.toLowerCase().includes(searchTerm.toLowerCase())
+  })
 
   return (
     <>
       <div className="flex flex-row">
-        <SearchBar />
+        <SearchBar onSearch={setSearchTerm} />
         <NewFriend uid={uid} />
       </div>
       <div>
         <ul>
-          {friends.map((friend) => (
-            <FriendListItem friend={friend} />
+          {filteredFriends.map((friend) => (
+            <FriendListItem key={friend.id} friend={friend} />
           ))}
         </ul>
       </div>
     </>
   )
 }
+
 
 const FriendListItem = ({ friend }) => {
   return (
