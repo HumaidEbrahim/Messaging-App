@@ -21,6 +21,22 @@ import { IoMdAttach } from 'react-icons/io'
 
 dayjs.extend(relativeTime)
 
+const daisyColors = [
+  'text-primary',
+  'text-secondary',
+  'text-accent',
+  'text-info',
+  'text-success',
+  'text-warning',
+  'text-error',
+]
+
+const getColorClass = (name) => {
+  const index = name ? name.charCodeAt(0) % daisyColors.length : 0
+  return daisyColors[index]
+}
+
+
 const BlankChat = () => {
   return (
     <div className="flex flex-col h-full w-full ">
@@ -49,7 +65,7 @@ const MessageReceived = ({ message, sender}) => {
       <div className="flex flex-col space-y-1">
         {/* Header */}
         <div className="flex items-center space-x-2 text-sm text-gray-700">
-          <span className="font-semibold text-white text-base">
+          <span className={`font-semibold text-base ${getColorClass(sender?.username)}`}>
             {sender?.username}
           </span>
           <time className="text-xs text-gray-400">
@@ -106,7 +122,7 @@ const DateSeparator = ({ date }) => {
   return (
     <div className="flex items-center my-6">
       <div className="flex-grow border-t border-gray-600"></div>
-      <span className="mx-4 text-xs text-gray-300 font-medium ">
+      <span className="mx-4 text-xs text-base-content/70 font-medium ">
         {formattedDate}
       </span>
       <div className="flex-grow border-t border-gray-600"></div>

@@ -14,6 +14,7 @@ const MainApp = ({ uid }) => {
   // user info
   const [user] = useDocumentData(doc(db, 'users', uid))
   console.log('user', user)
+  console.log('uid', uid)
 
   // selected chat
   const [selectedChat, setSelectedChat] = useState(null)
@@ -96,8 +97,9 @@ const MainApp = ({ uid }) => {
                 uid={uid}
                 setSelectedChat={setSelectedChat}
                 friendIds={user.friends}
+                user={user}
               />
-              <Profile user={user} />
+             
             </div>
 
             {/* Chat */}
