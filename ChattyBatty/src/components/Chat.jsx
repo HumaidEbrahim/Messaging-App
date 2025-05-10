@@ -184,7 +184,7 @@ const Chat = ({ selectedChat, participants, uid }) => {
   if (!selectedChat) return <BlankChat />
 
   const friend = participants.find((p) => p !== uid)
-  const chatName = selectedChat.isGroup? selectedChat.groupName : friend.username
+  const chatName = selectedChat.isGroup? selectedChat.groupName : friend?.username
 
   if (!messages) return <div>Akward Silence</div>
 

@@ -18,8 +18,9 @@ const MainApp = ({ uid }) => {
   // selected chat
   const [selectedChat, setSelectedChat] = useState(null)
   const [participants, setParticipants] = useState([])
+ 
 
-
+ 
   // get chats
   const chatQuery = query(
     collection(db, 'chat'),
@@ -32,6 +33,16 @@ const MainApp = ({ uid }) => {
     ...doc.data(),
     id: doc.id,
   }))
+
+
+//   useEffect(() => {
+//   if (selectedChat && chats.length > 0) {
+//     const details = chats.find(chat => chat.id === selectedChat)
+//     setSelectedChatDetails(details);
+//   }
+// }, [selectedChat, chats])
+
+
 
   // get chat participant details
   useEffect(() => {

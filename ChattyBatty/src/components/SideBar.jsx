@@ -12,10 +12,14 @@ import {
   where,
   getDocs,
   arrayUnion,
+  getDoc
 } from 'firebase/firestore'
 import { db } from '../firebaseConfig'
 import { BiSolidMessageAdd, BiUserPlus } from 'react-icons/bi'
 import { useState } from 'react'
+import { LuUsers, LuMessagesSquare } from "react-icons/lu"
+import { MdGroupAdd } from "react-icons/md"
+import { CgAddR } from "react-icons/cg"
 
 dayjs.extend(relativeTime)
 
@@ -54,6 +58,80 @@ const ChatListItem = ({ chat, uid, setSelectedChat }) => {
   )
 }
 
+const ChatList = ({ chats, uid, setSelectedChat }) => {
+  return (
+    <div>
+      <div className="flex flex-row">
+        <SearchBar />
+
+        <NewChat chats={chats} setSelectedChat={setSelectedChat} uid={uid} />
+         <NewGroupChat chats={chats} setSelectedChat={setSelectedChat} uid={uid} />
+      </div>
+      <ul className=" ">
+        {chats.map((chat) => (
+          <ChatListItem
+            key={chat.id}
+            chat={chat}
+            uid={uid}
+            setSelectedChat={setSelectedChat}
+          />
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+const NewChatItem = ({ friend, setSelectedChat, chats, uid }) => {
+  const chat = chats.find(
+    (c) => c.participants.includes(friend.id) && !c.isGroup,
+  )
+
+  const addChat = async () => {
+    const chatRef = await addDoc(collection(db, 'chat'), {
+      participants: [friend.id, uid],
+      lastMessage: {
+        message: '',
+        sentAt: null,
+        sentBy: null,
+      },
+      
+    })
+
+    const docSnap = await getDoc(chatRef);
+
+  if (docSnap.exists()) {
+    const chat = {
+      id: chatRef.id,
+      ...docSnap.data(),
+    };
+  
+    setSelectedChat(chat)
+
+  } 
+  }
+  const selectChat = async () => {
+    if (!chat) {
+      await addChat()
+     
+    } else {
+      setSelectedChat(chat)
+    }
+  }
+
+  return (
+    <li onClick={selectChat} className="border-b border-base-content/10 ">
+      <div>
+        <img
+          className="w-10 h-10 rounded-full object-cover "
+          src={friend.photo}
+        />
+        <div className="text-xs uppercase font-medium">{friend.username}</div>
+      </div>
+    </li>
+  )
+}
+
+
 const NewChat = ({ chats, setSelectedChat, uid }) => {
   const friends = useFriends()
 
@@ -83,6 +161,106 @@ const NewChat = ({ chats, setSelectedChat, uid }) => {
     </div>
   )
 }
+
+const NewGroupChatItem = ({ friend, setGroupMembers, groupMembers}) => {
+
+  const isChecked = groupMembers.includes(friend.id)
+
+  const selectMember =(event) =>
+  {
+    if( event.currentTarget.checked)
+      setGroupMembers([...groupMembers, friend.id])
+    else
+      setGroupMembers(groupMembers.filter(id => id !== friend.id))
+  }
+  return (
+    <li onClick={() => {}} className="border-b border-base-content/10 ">
+      <div>
+        <img
+          className="w-10 h-10 rounded-full object-cover "
+          src={friend.photo}
+        />
+        <div className="text-xs uppercase font-medium">{friend.username}</div>
+        <input type='checkbox' checked={isChecked} onChange={selectMember} className="checkbox checkbox-sm" />
+      </div>
+    </li>
+  )
+}
+
+const NewGroupChat = ({ chats, setSelectedChat, uid }) => {
+   const friends = useFriends()
+   const [groupMembers, setGroupMembers] = useState([uid])
+   const [groupName, setGroupName] = useState('Group Chat')
+
+   console.log("Members" ,groupMembers)
+
+  const createGroup = async () => {
+  const docRef = await addDoc(collection(db, 'chat'), {
+    participants: groupMembers,
+    lastMessage: {
+      message: '',
+      sentAt: null,
+      sentBy: null,
+    },
+    groupName: groupName,
+    isGroup: true,
+    groupCreator: uid,
+    groupPhoto: "https://static.vecteezy.com/system/resources/previews/026/019/617/non_2x/group-profile-avatar-icon-default-social-media-forum-profile-photo-vector.jpg"
+  });
+
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const chat = {
+      id: docRef.id,
+      ...docSnap.data(),
+    };
+  
+    setSelectedChat(chat);
+
+  } 
+};
+
+
+  return (
+     <div className="dropdown dropdown-bottom dropdown-end ">
+      <div
+        tabIndex={0}
+        role="button"
+        className="btn btn-circle btn-primary m-1"
+      >
+       <MdGroupAdd size={20} />
+      </div>
+      <div className="dropdown-content menu bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl"> 
+         <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 w-full">
+  <legend className="fieldset-legend">Group Name?</legend>
+  <div className="join">
+    <input type="text" value={groupName} onChange={(e) => setGroupName(e.target.value)}className="input join-item" placeholder="Name" />
+    <button onClick={createGroup}className="btn join-item"><CgAddR size={20}/></button>
+  </div>
+</fieldset>
+      <ul
+        tabIndex={0}
+       
+      >
+        {friends.map((friend) => (
+          <NewGroupChatItem
+            key={friend.id}
+            friend={friend}
+            setGroupMembers={setGroupMembers}
+            groupMembers={groupMembers}
+            chats={chats}
+            uid={uid}
+          />
+        ))}
+      </ul>
+    </div>
+    </div>
+
+  )
+}
+
+// Friends
 
 const NewFriend = ({ uid }) => {
   const [newFriendEmail, setNewFriendEmail] = useState('')
@@ -188,66 +366,6 @@ const NewFriend = ({ uid }) => {
   )
 }
 
-const NewChatItem = ({ friend, setSelectedChat, chats, uid }) => {
-  const chat = chats.find(
-    (c) => c.participants.includes(friend.id) && c.participants.length === 2,
-  )
-
-  const addChat = async () => {
-    const chatRef = await addDoc(collection(db, 'chat'), {
-      participants: [friend.id, uid],
-      lastMessage: {
-        message: '',
-        sentAt: null,
-        sentBy: null,
-      },
-    })
-
-    return chatRef.id
-  }
-  const selectChat = async () => {
-    if (!chat) {
-      const chatId = await addChat()
-      setSelectedChat({ chatId: chatId, friend: friend })
-    } else {
-      setSelectedChat({ chatId: chat.id, friend: friend })
-    }
-  }
-
-  return (
-    <li onClick={selectChat} className="border-b border-base-content/10 ">
-      <div>
-        <img
-          className="w-10 h-10 rounded-full object-cover "
-          src={friend.photo}
-        />
-        <div className="text-xs uppercase font-medium">{friend.username}</div>
-      </div>
-    </li>
-  )
-}
-
-const ChatList = ({ chats, uid, setSelectedChat }) => {
-  return (
-    <div>
-      <div className="flex flex-row">
-        <SearchBar />
-
-        <NewChat chats={chats} setSelectedChat={setSelectedChat} uid={uid} />
-      </div>
-      <ul className=" ">
-        {chats.map((chat) => (
-          <ChatListItem
-            key={chat.id}
-            chat={chat}
-            uid={uid}
-            setSelectedChat={setSelectedChat}
-          />
-        ))}
-      </ul>
-    </div>
-  )
-}
 
 const FriendList = ({ uid }) => {
   const friends = useFriends()
@@ -305,20 +423,7 @@ const SideBar = ({ chats, uid, setSelectedChat }) => {
           onClick={() => setSetlectedSideBar('chats')}
           className={`tab ${selectedSideBar === 'chats' ? 'tab-active' : ''} text-xl`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"
-            />
-          </svg>
+         <LuMessagesSquare />
           Chats
         </a>
 
@@ -327,20 +432,7 @@ const SideBar = ({ chats, uid, setSelectedChat }) => {
           onClick={() => setSetlectedSideBar('friends')}
           className={`tab ${selectedSideBar === 'friends' ? 'tab-active' : ''} text-xl`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
-            />
-          </svg>
+          <LuUsers />
           Friends
         </a>
       </div>
