@@ -1,6 +1,6 @@
 const WelcomePage = ({ onClick }) => {
   return (
-    <div className="hero bg-base-200 min-h-screen">
+    <div className="hero bg-base-200 min-h-screen draggable">
       <div className="mockup-window bg-base-100 border border-base-300">
         <div className="hero-content flex-col lg:flex-row">
           <img
@@ -10,7 +10,7 @@ const WelcomePage = ({ onClick }) => {
           <div>
             <h1 className="text-5xl font-bold">Welcome to ChattyBatty!</h1>
             <p className="py-6">Talk with friends and stuff</p>
-            <button className="btn btn-primary text-black]" onClick={onClick}>
+            <button className="btn btn-primary no-drag" onClick={onClick}>
               <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" />
               Login with Google
             </button>

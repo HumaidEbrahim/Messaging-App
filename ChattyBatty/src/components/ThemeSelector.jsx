@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+
 const ThemeSelector = () => {
   const [theme, setTheme] = useState('dark')
 
@@ -38,7 +39,10 @@ const ThemeSelector = () => {
 
   return (
     <div className="dropdown btn-xs btn-primary mb-2">
-      <div tabIndex={0} role="button" className="btn m-1">
+      <div tabIndex={0} role="button" className="btn m-1 no-drag {
+  -webkit-app-region: no-drag;
+}
+">
         Theme
         <svg
           width="12px"
