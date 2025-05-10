@@ -19,7 +19,7 @@ const GroupDetails = () => {
 
 const DetailBar = ({ selectedChat, participants, uid }) => {
 
-   const friend = participants.find((p) => p !== uid)
+   const friend = participants.find((p) => p.id !== uid)
   if (!selectedChat) return <div> Error getting details </div>
 
 
