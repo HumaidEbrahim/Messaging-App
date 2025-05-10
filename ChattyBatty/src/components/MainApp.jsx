@@ -81,8 +81,8 @@ const MainApp = ({ uid }) => {
 
   return (
     <FriendProvider user={user}>
-      <div className="h-screen p-4 box-border bg-base-300">
-        <div className="grid grid-rows-[auto_1fr] h-full rounded-4xl overflow-hidden shadow-lg">
+      <div className="h-screen p-4 pt-7 box-border bg-base-300 draggable">
+        <div className="grid grid-rows-[auto_1fr] h-full rounded-4xl overflow-hidden shadow-lg no-drag">
           {/* Header */}
           <div>
             <Header photo={user.photo} username={user.username} />
