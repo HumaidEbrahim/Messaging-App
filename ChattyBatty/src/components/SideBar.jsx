@@ -20,6 +20,7 @@ import { LuUsers, LuMessagesSquare } from "react-icons/lu"
 import { MdGroupAdd } from "react-icons/md"
 import { CgAddR } from "react-icons/cg"
 import FriendContext from "../FriendContext"
+import Profile from './Profile'
 
 dayjs.extend(relativeTime)
 
@@ -409,42 +410,50 @@ const FriendListItem = ({ friend }) => {
   )
 }
 
-const SideBar = ({ chats, uid, setSelectedChat }) => {
+const SideBar = ({ chats, uid, setSelectedChat, user }) => {
   const [selectedSideBar, setSetlectedSideBar] = useState('chats')
 
   if (!chats) return 'No chats'
 
   console.log('chats', chats)
 
-  return (
-    <div className="p-2">
-      <div role="tablist" className="tabs tabs-lift p-1">
-        <a
-          role="tab"
-          onClick={() => setSetlectedSideBar('chats')}
-          className={`tab ${selectedSideBar === 'chats' ? 'tab-active' : ''} text-xl`}
-        >
-         <LuMessagesSquare />
-          Chats
-        </a>
+ return (
+  <div className="flex flex-col h-full p-2">
+  
+    <div role="tablist" className="tabs tabs-lift p-1 shrink-0">
+      <a
+        role="tab"
+        onClick={() => setSetlectedSideBar('chats')}
+        className={`tab ${selectedSideBar === 'chats' ? 'tab-active' : ''} text-xl`}
+      >
+        <LuMessagesSquare />
+        Chats
+      </a>
+      <a
+        role="tab"
+        onClick={() => setSetlectedSideBar('friends')}
+        className={`tab ${selectedSideBar === 'friends' ? 'tab-active' : ''} text-xl`}
+      >
+        <LuUsers />
+        Friends
+      </a>
+    </div>
 
-        <a
-          role="tab"
-          onClick={() => setSetlectedSideBar('friends')}
-          className={`tab ${selectedSideBar === 'friends' ? 'tab-active' : ''} text-xl`}
-        >
-          <LuUsers />
-          Friends
-        </a>
-      </div>
 
+    <div className="flex-1 overflow-y-auto">
       {selectedSideBar === 'chats' ? (
         <ChatList chats={chats} uid={uid} setSelectedChat={setSelectedChat} />
       ) : (
         <FriendList uid={uid} />
       )}
     </div>
-  )
+
+ 
+    <div className="shrink-0 border-t border-base-200 pt-2">
+      <Profile user={user} />
+    </div>
+  </div>
+)
 }
 
 export default SideBar
