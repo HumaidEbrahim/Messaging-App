@@ -12,11 +12,14 @@ const ThemeSelector = () => {
   const themes = [
     { id: 1, name: 'dark', emoji: '🌑' },
     { id: 2, name: 'retro', emoji: '☎️' },
-    { id: 3, name: 'cyberpunk', emoji: '😎' },
+    { id: 3, name: 'synthwave', emoji: '😎' },
     { id: 4, name: 'night', emoji: '🌙' },
     { id: 5, name: 'coffee', emoji: '☕' },
     { id: 6, name: 'aqua', emoji: '🌊' },
     { id: 7, name: 'sunset', emoji: '🌄' },
+    { id: 8, name: 'dracula', emoji: '😈'},
+    { id: 9, name: 'abyss', emoji: '👁️'}
+
   ]
 
   const ListItem = ({ name, emoji }) => (
