@@ -450,7 +450,7 @@ const SideBar = ({ chats, uid, setSelectedChat, user }) => {
 
  
     <div className="shrink-0 border-t border-base-200 pt-2">
-      <Profile user={user} />
+      <Profile user={user} uid={uid} />
     </div>
   </div>
 )

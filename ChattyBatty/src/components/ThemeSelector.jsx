@@ -18,7 +18,9 @@ const ThemeSelector = () => {
     { id: 6, name: 'aqua', emoji: '🌊' },
     { id: 7, name: 'sunset', emoji: '🌄' },
     { id: 8, name: 'dracula', emoji: '😈'},
-    { id: 9, name: 'abyss', emoji: '👁️'}
+    { id: 9, name: 'abyss', emoji: '👁️'},
+    { id: 10, name: 'dim', emoji: '💡'},
+     { id: 11, name: 'forest', emoji: '🌳'}
 
   ]
 
