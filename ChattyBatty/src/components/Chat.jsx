@@ -30,19 +30,17 @@ const BlankChat = () => {
   )
 }
 
-const ChatHeader = () => {
-  return <div className="navbar  "></div>
-}
 
-const MessageReceived = ({ message, friend }) => {
+// Messages
+const MessageReceived = ({ message, sender}) => {
   const sentAt = dayjs(message.sentAt.toDate())
   return (
     <div className="flex items-start space-x-3">
       {/* Avatar */}
       <div className="w-10 h-10 rounded-full overflow-hidden">
         <img
-          src={friend.photo}
-          alt={`${friend.username}'s avatar`}
+          src={sender?.photo}
+          alt={`${sender?.username}'s avatar`}
           className="w-full h-full object-cover"
         />
       </div>
@@ -51,7 +49,7 @@ const MessageReceived = ({ message, friend }) => {
         {/* Header */}
         <div className="flex items-center space-x-2 text-sm text-gray-700">
           <span className="font-semibold text-white text-base">
-            {friend.username}
+            {sender?.username}
           </span>
           <time className="text-xs text-gray-400">
             {message?.sentAt?.toDate
@@ -115,7 +113,8 @@ const DateSeparator = ({ date }) => {
   )
 }
 
-const Chat = ({ selectedChat, uid }) => {
+// Chat 
+const Chat = ({ selectedChat, participants, uid }) => {
   const [newMessage, setNewMessage] = useState('')
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const messagesEndRef = useRef(null)
@@ -126,7 +125,7 @@ const Chat = ({ selectedChat, uid }) => {
     if (!newMessage.trim()) return
 
     const docRef = await addDoc(
-      collection(db, 'chat', selectedChat.chatId, 'messages'),
+      collection(db, 'chat', selectedChat.id, 'messages'),
       {
         message: newMessage,
         sentBy: uid,
@@ -134,7 +133,7 @@ const Chat = ({ selectedChat, uid }) => {
       },
     )
 
-    await updateDoc(doc(db, 'chat', selectedChat.chatId), {
+    await updateDoc(doc(db, 'chat', selectedChat.id), {
       lastMessage: {
         message: newMessage,
         sentBy: uid,
@@ -147,9 +146,10 @@ const Chat = ({ selectedChat, uid }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
 
+  // get messages from subcollection
   const q = selectedChat
     ? query(
-        collection(doc(db, 'chat', selectedChat.chatId), 'messages'),
+        collection(doc(db, 'chat', selectedChat.id), 'messages'),
         orderBy('sentAt', 'asc'),
       )
     : null
@@ -161,6 +161,7 @@ const Chat = ({ selectedChat, uid }) => {
     id: doc.id,
   }))
 
+  // emojis 
   const onEmojiClick = (emojiData) => {
     setNewMessage((prev) => prev + emojiData.emoji)
     setShowEmojiPicker(false) // Hide picker after selection
@@ -182,14 +183,15 @@ const Chat = ({ selectedChat, uid }) => {
 
   if (!selectedChat) return <BlankChat />
 
-  const friend = selectedChat.friend
+  const friend = participants.find((p) => p !== uid)
+  const chatName = selectedChat.isGroup? selectedChat.groupName : friend.username
 
   if (!messages) return <div>Akward Silence</div>
 
   return (
     <div className="flex flex-col h-full w-full max-h-screen relative">
       <div className="p-4 font-bold border-b border-base-content/50 shrink-0 bg-base-100 z-10">
-        # {friend.username}
+        # {chatName}
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-base-200">
@@ -199,14 +201,16 @@ const Chat = ({ selectedChat, uid }) => {
           const showDate =
             !prev || !dayjs(prev.sentAt.toDate()).isSame(currentDate, 'day')
 
+          const sender = participants.find((p) => p.id === message.sentBy)
+
           return (
             <div key={message.id}>
               {showDate && <DateSeparator date={currentDate} />}
-              {message.sentBy === friend.id ? (
-                <MessageReceived message={message} friend={friend} />
-              ) : (
+              {message.sentBy === uid? 
                 <MessageSent message={message} />
-              )}
+                 :<MessageReceived message={message} sender={sender} />
+               
+              }
             </div>
           )
         })}

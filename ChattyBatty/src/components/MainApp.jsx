@@ -1,21 +1,24 @@
 import SideBar from './SideBar'
-import FriendsList from './FriendsList'
 import Header from './Header'
 import Chat from './Chat'
 import { FriendProvider } from '../FriendContext'
 import { useDocumentData, useCollection } from 'react-firebase-hooks/firestore'
 import { db } from '../firebaseConfig'
-import { doc, collection, query, where, orderBy } from 'firebase/firestore'
-import { useState } from 'react'
+import { doc, collection, query, where, orderBy, getDoc
+ } from 'firebase/firestore'
+import { useEffect, useState } from 'react'
 import DetailBar from './DetailBar'
 import Profile from './Profile'
 
 const MainApp = ({ uid }) => {
+  // user info
   const [user] = useDocumentData(doc(db, 'users', uid))
   console.log('user', user)
-  const [selectedChat, setSelectedChat] = useState(null)
 
-  console.log('uid', uid)
+  // selected chat
+  const [selectedChat, setSelectedChat] = useState(null)
+  const [participants, setParticipants] = useState([])
+
 
   // get chats
   const chatQuery = query(
@@ -30,7 +33,36 @@ const MainApp = ({ uid }) => {
     id: doc.id,
   }))
 
-  console.log('selected', selectedChat)
+  // get chat participant details
+  useEffect(() => {
+  const fetchParticipants = async () => {
+    if (!selectedChat?.participants?.length) return;
+
+    const participantPromises = selectedChat.participants.map((id) => {
+      const docRef = doc(db, "users", id);
+      return getDoc(docRef);
+    });
+
+    const participantDocs = await Promise.all(participantPromises);
+
+    const participants = participantDocs
+      .map((docSnap) => {
+        if (docSnap.exists()) {
+          return { ...docSnap.data(), id: docSnap.id };
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    setParticipants(participants);
+  };
+
+  fetchParticipants();
+}, [selectedChat?.participants])
+
+ console.log("participants", participants)
+
+  console.log('selectedChat', selectedChat)
   if (!user) {
     return <div>Loading...</div>
   }
@@ -57,14 +89,14 @@ const MainApp = ({ uid }) => {
               <Profile user={user} />
             </div>
 
-            {/* Chat - Added min-h-0 and overflow handling */}
+            {/* Chat */}
             <div className="bg-base-100 col-span-1 md:col-span-2 lg:col-span-3 flex flex-col min-h-0">
-              {selectedChat && <Chat selectedChat={selectedChat} uid={uid} />}
+              {selectedChat && <Chat selectedChat={selectedChat} participants={participants} uid={uid} />}
             </div>
 
             {/* Detail Bar */}
             <div className="bg-base-100 overflow-y-auto hidden lg:block">
-              {selectedChat && <DetailBar selectedChat={selectedChat} />}
+              {selectedChat && <DetailBar participants={participants} selectedChat={selectedChat} uid={uid} />}
             </div>
           </div>
         </div>

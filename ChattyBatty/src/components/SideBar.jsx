@@ -28,18 +28,18 @@ const ChatListItem = ({ chat, uid, setSelectedChat }) => {
 
   return (
     <li
-      onClick={() => setSelectedChat({ chatId: chat.id, friend: friend })}
+      onClick={() => setSelectedChat(chat)}
       className="pb-3 sm:pb-4"
     >
       <div className="flex items-center">
         <div className="shrink-0 p-2">
           <img
             className="w-10 h-10  rounded-full object-cover"
-            src={friend.photo}
+            src={chat.isGroup? chat.groupPhoto : friend.photo}
           />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-base font-medium">{friend.username}</p>
+          <p className="text-base font-medium">{chat.isGroup? chat.groupName : friend.username}</p>
           <p className="text-sm text-base-content/70 truncate max-w-full">
             {chat?.lastMessage?.message}
           </p>
