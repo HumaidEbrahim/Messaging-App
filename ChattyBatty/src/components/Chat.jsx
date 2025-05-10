@@ -197,7 +197,7 @@ const Chat = ({ selectedChat, participants, uid }) => {
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-base-200">
         {messages.map((message, index) => {
           const prev = messages[index - 1]
-          const currentDate = dayjs(message.sentAt.toDate())
+          const currentDate = dayjs(message?.sentAt?.toDate())
           const showDate =
             !prev || !dayjs(prev.sentAt.toDate()).isSame(currentDate, 'day')
 
