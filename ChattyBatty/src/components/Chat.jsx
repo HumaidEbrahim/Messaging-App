@@ -48,7 +48,7 @@ const BlankChat = () => {
 
 // Messages
 const MessageReceived = ({ message, sender }) => {
-  const sentAt = dayjs(message.sentAt.toDate())
+
   return (
     <div className="flex items-start space-x-3">
       {/* Avatar */}
@@ -87,7 +87,6 @@ const MessageReceived = ({ message, sender }) => {
 }
 
 const MessageSent = ({ message }) => {
-  const sentAt = message.sentAt?.toDate ? dayjs(message.sentAt.toDate()) : null
   return (
     <div className="flex justify-end">
       <div className="flex flex-col space-y-1 items-end">

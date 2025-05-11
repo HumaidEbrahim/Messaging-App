@@ -31,6 +31,14 @@ const ChatListItem = ({ chat, uid, setSelectedChat }) => {
 
   if (!friend) return <div>error</div>
 
+  const date = dayjs(chat?.lastMessage?.sentAt?.toDate())
+  const now = dayjs()
+    const formattedDate = date?.isSame(now, 'day')
+      ? date?.format('hh:mm A')
+      : date?.isSame(now.subtract(1, 'day'), 'day')
+        ? 'Yesterday'
+        : date?.format('MM/DD/YY')
+
   return (
     <li onClick={() => setSelectedChat(chat)} className="pb-3 sm:pb-4">
       <div className="flex items-center">
@@ -49,10 +57,8 @@ const ChatListItem = ({ chat, uid, setSelectedChat }) => {
             {chat?.lastMessage?.message}
           </p>
         </div>
-        <div className="inline-flex items-center pr-2 text-base-content/70 text-sm">
-          {chat?.lastMessage?.sentAt
-            ? dayjs(chat?.lastMessage?.sentAt?.toDate()).fromNow()
-            : ''}
+        <div className="inline-flex items-center pr-2 text-base-content/70 text-xs">
+          {formattedDate}
         </div>
       </div>
     </li>
