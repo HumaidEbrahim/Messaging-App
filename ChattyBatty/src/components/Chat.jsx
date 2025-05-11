@@ -36,16 +36,6 @@ const getColorClass = (name) => {
   return daisyColors[index]
 }
 
-const BlankChat = () => {
-  return (
-    <div className="flex flex-col h-full w-full ">
-      <div className="flex flex-1 justify-center items-center">
-        <p className="text-3xl text-base-300 font-semibold "> ChattyBatty </p>
-      </div>
-    </div>
-  )
-}
-
 // Messages
 const MessageReceived = ({ message, sender }) => {
 
