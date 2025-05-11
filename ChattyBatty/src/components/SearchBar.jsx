@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 
-const SearchBar = ({onSearch}) => {
+const SearchBar = ({ onSearch }) => {
   return (
     <>
       <label className="input">
@@ -20,11 +20,12 @@ const SearchBar = ({onSearch}) => {
             <path d="m21 21-4.3-4.3"></path>
           </g>
         </svg>
-        <input 
-          type="text" 
-          required placeholder="Search"
+        <input
+          type="text"
+          required
+          placeholder="Search"
           onChange={(e) => onSearch(e.target.value)}
-          />
+        />
       </label>
     </>
   )

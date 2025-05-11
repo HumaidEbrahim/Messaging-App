@@ -6,7 +6,8 @@ import {
   query,
   where,
   orderBy,
-  serverTimestamp,  updateDoc,
+  serverTimestamp,
+  updateDoc,
 } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
 import dayjs from 'dayjs'
@@ -17,7 +18,6 @@ import { IoIosSend } from 'react-icons/io'
 import EmojiPicker, { EmojiStyle } from 'emoji-picker-react'
 import { FaSmile } from 'react-icons/fa'
 import { IoMdAttach } from 'react-icons/io'
-
 
 dayjs.extend(relativeTime)
 
@@ -36,7 +36,6 @@ const getColorClass = (name) => {
   return daisyColors[index]
 }
 
-
 const BlankChat = () => {
   return (
     <div className="flex flex-col h-full w-full ">
@@ -47,9 +46,8 @@ const BlankChat = () => {
   )
 }
 
-
 // Messages
-const MessageReceived = ({ message, sender}) => {
+const MessageReceived = ({ message, sender }) => {
   const sentAt = dayjs(message.sentAt.toDate())
   return (
     <div className="flex items-start space-x-3">
@@ -65,7 +63,9 @@ const MessageReceived = ({ message, sender}) => {
       <div className="flex flex-col space-y-1">
         {/* Header */}
         <div className="flex items-center space-x-2 text-sm text-gray-700">
-          <span className={`font-semibold text-base ${getColorClass(sender?.username)}`}>
+          <span
+            className={`font-semibold text-base ${getColorClass(sender?.username)}`}
+          >
             {sender?.username}
           </span>
           <time className="text-xs text-gray-400">
@@ -130,7 +130,7 @@ const DateSeparator = ({ date }) => {
   )
 }
 
-// Chat 
+// Chat
 const Chat = ({ selectedChat, participants, uid }) => {
   const [newMessage, setNewMessage] = useState('')
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
@@ -178,7 +178,7 @@ const Chat = ({ selectedChat, participants, uid }) => {
     id: doc.id,
   }))
 
-  // emojis 
+  // emojis
   const onEmojiClick = (emojiData) => {
     setNewMessage((prev) => prev + emojiData.emoji)
     setShowEmojiPicker(false) // Hide picker after selection
@@ -201,10 +201,14 @@ const Chat = ({ selectedChat, participants, uid }) => {
   if (!selectedChat) return <BlankChat />
 
   const friend = participants.find((p) => p.id !== uid)
-  const chatName = selectedChat.isGroup? selectedChat.groupName : friend?.username
+  const chatName = selectedChat.isGroup
+    ? selectedChat.groupName
+    : friend?.username
 
   if (!messages) return <div>Akward Silence</div>
 
+
+  
   return (
     <div className="flex flex-col h-full w-full max-h-screen relative">
       <div className="p-4 font-bold border-b border-base-content/50 shrink-0 bg-base-100 z-10">
@@ -223,11 +227,11 @@ const Chat = ({ selectedChat, participants, uid }) => {
           return (
             <div key={message.id}>
               {showDate && <DateSeparator date={currentDate} />}
-              {message.sentBy === uid? 
+              {message.sentBy === uid ? (
                 <MessageSent message={message} />
-                 :<MessageReceived message={message} sender={sender} />
-               
-              }
+              ) : (
+                <MessageReceived message={message} sender={sender} />
+              )}
             </div>
           )
         })}
@@ -267,9 +271,14 @@ const Chat = ({ selectedChat, participants, uid }) => {
 
           <button
             type="button"
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-300 text-xl"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-base-300 text-xl relative overflow-hidden"
           >
             <IoMdAttach />
+            <input
+              type="file"
+              accept="image/*"
+              className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+            />
           </button>
 
           <TextareaAutosize
@@ -278,6 +287,13 @@ const Chat = ({ selectedChat, participants, uid }) => {
             value={newMessage}
             onChange={(event) => setNewMessage(event.target.value)}
             onFocus={() => setShowEmojiPicker(false)}
+            onKeyDown={(event) => {
+          // Check for Enter key and send message
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault() // Prevent new line on Enter
+            sendMessage(event) // Call your existing sendMessage function
+          }
+        }}
             minRows={1}
             maxRows={6}
           />

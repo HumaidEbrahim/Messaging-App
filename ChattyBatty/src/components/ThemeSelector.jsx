@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-
 const ThemeSelector = () => {
   const [theme, setTheme] = useState('dark')
 
@@ -18,11 +17,10 @@ const ThemeSelector = () => {
     { id: 5, name: 'coffee', emoji: '☕' },
     { id: 6, name: 'aqua', emoji: '🌊' },
     { id: 7, name: 'sunset', emoji: '🌄' },
-    { id: 8, name: 'dracula', emoji: '😈'},
-    { id: 9, name: 'abyss', emoji: '👁️'},
-    { id: 10, name: 'dim', emoji: '💡'},
-     { id: 11, name: 'forest', emoji: '🌳'}
-
+    { id: 8, name: 'dracula', emoji: '😈' },
+    { id: 9, name: 'abyss', emoji: '👁️' },
+    { id: 10, name: 'dim', emoji: '💡' },
+    { id: 11, name: 'forest', emoji: '🌳' },
   ]
 
   const ListItem = ({ name, emoji }) => (
@@ -39,10 +37,14 @@ const ThemeSelector = () => {
 
   return (
     <div className="dropdown btn-xs btn-primary mb-2">
-      <div tabIndex={0} role="button" className="btn m-1 no-drag {
+      <div
+        tabIndex={0}
+        role="button"
+        className="btn m-1 no-drag {
   -webkit-app-region: no-drag;
 }
-">
+"
+      >
         Theme
         <svg
           width="12px"

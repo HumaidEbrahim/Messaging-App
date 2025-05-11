@@ -4,8 +4,14 @@ import Chat from './Chat'
 import { FriendProvider } from '../FriendContext'
 import { useDocumentData, useCollection } from 'react-firebase-hooks/firestore'
 import { db } from '../firebaseConfig'
-import { doc, collection, query, where, orderBy, getDoc
- } from 'firebase/firestore'
+import {
+  doc,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDoc,
+} from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import DetailBar from './DetailBar'
 import Profile from './Profile'
@@ -19,9 +25,7 @@ const MainApp = ({ uid }) => {
   // selected chat
   const [selectedChat, setSelectedChat] = useState(null)
   const [participants, setParticipants] = useState([])
- 
 
- 
   // get chats
   const chatQuery = query(
     collection(db, 'chat'),
@@ -35,44 +39,41 @@ const MainApp = ({ uid }) => {
     id: doc.id,
   }))
 
-
-//   useEffect(() => {
-//   if (selectedChat && chats.length > 0) {
-//     const details = chats.find(chat => chat.id === selectedChat)
-//     setSelectedChatDetails(details);
-//   }
-// }, [selectedChat, chats])
-
-
+  //   useEffect(() => {
+  //   if (selectedChat && chats.length > 0) {
+  //     const details = chats.find(chat => chat.id === selectedChat)
+  //     setSelectedChatDetails(details);
+  //   }
+  // }, [selectedChat, chats])
 
   // get chat participant details
   useEffect(() => {
-  const fetchParticipants = async () => {
-    if (!selectedChat?.participants?.length) return;
+    const fetchParticipants = async () => {
+      if (!selectedChat?.participants?.length) return
 
-    const participantPromises = selectedChat.participants.map((id) => {
-      const docRef = doc(db, "users", id);
-      return getDoc(docRef);
-    });
-
-    const participantDocs = await Promise.all(participantPromises);
-
-    const participants = participantDocs
-      .map((docSnap) => {
-        if (docSnap.exists()) {
-          return { ...docSnap.data(), id: docSnap.id };
-        }
-        return null;
+      const participantPromises = selectedChat.participants.map((id) => {
+        const docRef = doc(db, 'users', id)
+        return getDoc(docRef)
       })
-      .filter(Boolean);
 
-    setParticipants(participants);
-  };
+      const participantDocs = await Promise.all(participantPromises)
 
-  fetchParticipants();
-}, [selectedChat?.participants])
+      const participants = participantDocs
+        .map((docSnap) => {
+          if (docSnap.exists()) {
+            return { ...docSnap.data(), id: docSnap.id }
+          }
+          return null
+        })
+        .filter(Boolean)
 
- console.log("participants", participants)
+      setParticipants(participants)
+    }
+
+    fetchParticipants()
+  }, [selectedChat?.participants])
+
+  console.log('participants', participants)
 
   console.log('selectedChat', selectedChat)
   if (!user) {
@@ -99,17 +100,28 @@ const MainApp = ({ uid }) => {
                 friendIds={user.friends}
                 user={user}
               />
-             
             </div>
 
             {/* Chat */}
             <div className="bg-base-100 col-span-1 md:col-span-2 lg:col-span-3 flex flex-col min-h-0">
-              {selectedChat && <Chat selectedChat={selectedChat} participants={participants} uid={uid} />}
+              {selectedChat && (
+                <Chat
+                  selectedChat={selectedChat}
+                  participants={participants}
+                  uid={uid}
+                />
+              )}
             </div>
 
             {/* Detail Bar */}
             <div className="bg-base-100 overflow-y-auto hidden lg:block">
-              {selectedChat && <DetailBar participants={participants} selectedChat={selectedChat} uid={uid} />}
+              {selectedChat && (
+                <DetailBar
+                  participants={participants}
+                  selectedChat={selectedChat}
+                  uid={uid}
+                />
+              )}
             </div>
           </div>
         </div>
