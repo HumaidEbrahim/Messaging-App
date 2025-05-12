@@ -209,7 +209,7 @@ const Chat = ({ selectedChat, participants, uid }) => {
           const prev = messages[index - 1]
           const currentDate = dayjs(message?.sentAt?.toDate())
           const showDate =
-            !prev || !dayjs(prev.sentAt.toDate()).isSame(currentDate, 'day')
+            !prev || !dayjs(prev?.sentAt?.toDate()).isSame(currentDate, 'day')
 
           const sender = participants.find((p) => p.id === message.sentBy)
 
