@@ -123,6 +123,7 @@ const MainApp = ({ uid }) => {
                   participants={participants}
                   selectedChat={selectedChat}
                   uid={uid}
+                  setSelectedChat={setSelectedChat}
                 />
               )}
             </div>

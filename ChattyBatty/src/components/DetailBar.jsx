@@ -1,17 +1,45 @@
-const FriendDetails = () => {
+import { doc, deleteDoc, updateDoc, arrayRemove } from 'firebase/firestore'
+import { db } from '../firebaseConfig'
+import { MdGroupAdd } from 'react-icons/md'
+
+const FriendDetails = ({ friend }) => {
   return (
     <>
-      {/* <div className="text-sm text-gray-500 italic">{friend.status}</div>
+      <div className="text-lg text-base-content/70 ">{friend?.status}</div>
 
-        <div className="text-sm text-gray-600">{friend.email}</div> */}
+        <div className="text-md text-base-content/50">{friend?.email}</div>
     </>
   )
 }
 
-const GroupDetails = ({ participants, groupCreator }) => {
+const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedChat }) => {
+
+    const deleteGroup = async () => {
+        await deleteDoc(doc(db, 'chat', groupId)) 
+        setSelectedChat(null)
+    }
+
+    const leaveGroup = async () => {
+      await updateDoc(doc(db, 'chat', groupId), {
+        participants: arrayRemove(uid)
+      } )
+      setSelectedChat(null)
+    }
+  
+
   return (
     <div className="w-full mt-4 space-y-3">
-      <div className="text-lg font-semibold mb-2">Participants</div>
+       {groupCreator !== uid ? (
+      <button className="btn btn-soft btn-error btn-wide" onClick={leaveGroup}>Leave Group</button>
+    ) : (
+      <> 
+      <MdGroupAdd size={20} />
+      <button className="btn btn-soft btn-error btn-wide" onClick={deleteGroup}>
+        Delete Group
+      </button>
+       </>
+    )}
+      <div className="text-lg font-semibold mb-2">Participants - {participants.length} </div>
       {participants.map((p) => (
         <div key={p.id} className="flex items-center space-x-3">
           <div className="avatar">
@@ -32,7 +60,7 @@ const GroupDetails = ({ participants, groupCreator }) => {
 }
 
 
-const DetailBar = ({ selectedChat, participants, uid }) => {
+const DetailBar = ({ selectedChat, participants, uid, setSelectedChat }) => {
   const friend = participants.find((p) => p.id !== uid)
   if (!selectedChat) return <div> Error getting details </div>
 
@@ -54,7 +82,14 @@ const DetailBar = ({ selectedChat, participants, uid }) => {
         </div>
 
         
-        {selectedChat.isGroup ? (<GroupDetails participants={participants} groupCreator={selectedChat.groupCreator}/>) : (<FriendDetails />)}
+        {selectedChat.isGroup ?
+         (<GroupDetails participants={participants} 
+          groupCreator={selectedChat.groupCreator}
+           uid={uid} 
+           groupId={selectedChat.id} 
+            setSelectedChat={setSelectedChat}/>
+         ) 
+        : (<FriendDetails friend={friend}/>)}
 
       </div>
     </div>
