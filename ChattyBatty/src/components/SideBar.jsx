@@ -34,7 +34,7 @@ const ChatListItem = ({ chat, uid, setSelectedChat }) => {
   const date = dayjs(chat?.lastMessage?.sentAt?.toDate())
   const now = dayjs()
     const formattedDate = date?.isSame(now, 'day')
-      ? date?.format('hh:mm A')
+      ? date?.format('h:mm A')
       : date?.isSame(now.subtract(1, 'day'), 'day')
         ? 'Yesterday'
         : date?.format('MM/DD/YY')

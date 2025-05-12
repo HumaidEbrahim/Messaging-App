@@ -1,6 +1,8 @@
 import { doc, deleteDoc, updateDoc, arrayRemove } from 'firebase/firestore'
 import { db } from '../firebaseConfig'
 import { MdGroupAdd } from 'react-icons/md'
+import FriendContext from '../FriendContext'
+import { useContext, useState } from 'react'
 
 const FriendDetails = ({ friend }) => {
   return (
@@ -33,10 +35,10 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
       <button className="btn btn-soft btn-error btn-wide" onClick={leaveGroup}>Leave Group</button>
     ) : (
       <> 
-      <MdGroupAdd size={20} />
       <button className="btn btn-soft btn-error btn-wide" onClick={deleteGroup}>
         Delete Group
       </button>
+      <EditMembers />
        </>
     )}
       <div className="text-lg font-semibold mb-2">Participants - {participants.length} </div>
@@ -59,6 +61,49 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
   )
 }
 
+const EditMembers = () => {
+const friends = useContext(FriendContext)
+  return (
+     <div className="dropdown dropdown-bottom dropdown-end ">
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-circle btn-primary m-1"
+          >
+            <MdGroupAdd size={20} />
+          </div>
+          <div className="dropdown-content menu bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl">
+            <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 w-full">
+              {/* <legend className="fieldset-legend">Group Name?</legend>
+              <div className="join">
+                <input
+                  type="text"
+                  value={groupName}
+                  onChange={(e) => setGroupName(e.target.value)}
+                  className="input join-item"
+                  placeholder="Name"
+                />
+                <button onClick={createGroup} className="btn join-item">
+                  <CgAddR size={20} />
+                </button>
+              </div> */}
+            </fieldset>
+            <ul tabIndex={0}>
+              {/* {friends.map((friend) => (
+                <NewGroupChatItem
+                  key={friend.id}
+                  friend={friend}
+                  setGroupMembers={setGroupMembers}
+                  groupMembers={groupMembers}
+                  chats={chats}
+                  uid={uid}
+                />
+              ))} */}
+            </ul>
+          </div>
+        </div>
+  )
+}
 
 const DetailBar = ({ selectedChat, participants, uid, setSelectedChat }) => {
   const friend = participants.find((p) => p.id !== uid)
