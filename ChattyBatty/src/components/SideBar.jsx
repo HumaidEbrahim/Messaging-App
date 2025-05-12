@@ -71,6 +71,11 @@ const ChatList = ({ chats, uid, setSelectedChat }) => {
     const name = chat.isGroup ? chat.groupName : friend?.username || ''
     return name.toLowerCase().includes(searchTerm.toLowerCase())
   })
+  .sort((a, b)=> {
+    const timeA =a.lastMessage?.sentAt?.toDate?.()||0
+    const timeB =b.lastMessage?.sentAt?.toDate?.()||0
+    return timeB - timeA
+  })
 
   return (
     <div>
@@ -386,10 +391,16 @@ const NewFriend = ({ uid }) => {
 const FriendList = ({ uid }) => {
   const friends = useContext(FriendContext)
   const [searchTerm, setSearchTerm] = useState('')
+  console.log('Original FRIENDS!!!!!!', friends)
 
-  const filteredFriends = friends.filter((friend) => {
-    return friend.username.toLowerCase().includes(searchTerm.toLowerCase())
-  })
+  const filteredFriends = friends
+    .filter((friend) =>
+      friend.username.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) =>
+      a.username.trim().toLowerCase().localeCompare(b.username.trim().toLowerCase())
+    )
+    console.log("FilteredFriends + SorterFriends: ", filteredFriends)
 
   return (
     <>
