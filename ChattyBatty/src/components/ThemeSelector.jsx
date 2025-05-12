@@ -1,12 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const ThemeSelector = () => {
   const [theme, setTheme] = useState('dark')
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'dark'
+    setTheme(savedTheme)
+    document.documentElement.setAttribute('data-theme', savedTheme)
+  },[])
 
   const handleThemeChange = (e) => {
     const selectedTheme = e.target.value
     setTheme(selectedTheme)
     document.documentElement.setAttribute('data-theme', selectedTheme)
+    localStorage.setItem('theme', selectedTheme)
   }
 
   const themes = [
@@ -40,10 +47,7 @@ const ThemeSelector = () => {
       <div
         tabIndex={0}
         role="button"
-        className="btn m-1 no-drag {
-  -webkit-app-region: no-drag;
-}
-"
+        className="btn m-1 no-drag"
       >
         Theme
         <svg
@@ -58,7 +62,7 @@ const ThemeSelector = () => {
       </div>
       <ul
         tabIndex={0}
-        className="dropdown-content bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl"
+        className="dropdown-content bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl no-drag"
       >
         {themes.map((theme) => (
           <ListItem key={theme.id} name={theme.name} emoji={theme.emoji} />

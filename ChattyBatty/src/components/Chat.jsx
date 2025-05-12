@@ -36,19 +36,9 @@ const getColorClass = (name) => {
   return daisyColors[index]
 }
 
-const BlankChat = () => {
-  return (
-    <div className="flex flex-col h-full w-full ">
-      <div className="flex flex-1 justify-center items-center">
-        <p className="text-3xl text-base-300 font-semibold "> ChattyBatty </p>
-      </div>
-    </div>
-  )
-}
-
 // Messages
 const MessageReceived = ({ message, sender }) => {
-  const sentAt = dayjs(message.sentAt.toDate())
+
   return (
     <div className="flex items-start space-x-3">
       {/* Avatar */}
@@ -87,7 +77,6 @@ const MessageReceived = ({ message, sender }) => {
 }
 
 const MessageSent = ({ message }) => {
-  const sentAt = message.sentAt?.toDate ? dayjs(message.sentAt.toDate()) : null
   return (
     <div className="flex justify-end">
       <div className="flex flex-col space-y-1 items-end">
@@ -220,7 +209,7 @@ const Chat = ({ selectedChat, participants, uid }) => {
           const prev = messages[index - 1]
           const currentDate = dayjs(message?.sentAt?.toDate())
           const showDate =
-            !prev || !dayjs(prev.sentAt.toDate()).isSame(currentDate, 'day')
+            !prev || !dayjs(prev?.sentAt?.toDate()).isSame(currentDate, 'day')
 
           const sender = participants.find((p) => p.id === message.sentBy)
 

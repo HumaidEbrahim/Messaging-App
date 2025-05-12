@@ -1,19 +1,29 @@
+import ThemeSelector from './ThemeSelector'
+import Logo from './Logo'
+
 const WelcomePage = ({ onClick }) => {
   return (
-    <div className="hero bg-base-200 min-h-screen draggable">
-      <div className="mockup-window bg-base-100 border border-base-300">
-        <div className="hero-content flex-col lg:flex-row">
-          <img
-            src="https://media.istockphoto.com/id/902453536/vector/smartphones.jpg?s=612x612&w=0&k=20&c=UtxmytEjTRCelaCH1lYx4UXJinAlpeisQiGIu_lNzwM="
-            className="max-w-sm rounded-lg shadow-2xl"
-          />
-          <div>
-            <h1 className="text-5xl font-bold">Welcome to ChattyBatty!</h1>
-            <p className="py-6">Talk with friends and stuff</p>
-            <button className="btn btn-primary no-drag" onClick={onClick}>
-              <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" />
-              Login with Google
-            </button>
+    <div className="relative min-h-screen bg-base-200 draggable">
+
+      <div className="absolute top-4 right-4 z-1">
+        <ThemeSelector />
+      </div>
+
+      <div className="hero min-h-screen">
+        <div className="mockup-window bg-base-100 border border-base-300 p-10">
+          <div className="hero-content flex-col lg:flex-row">
+            <div className="bg-gradient-to-r from-primary to-secondary text-primary-content shadow-2xl rounded-lg pl-15 pr-11">
+              <Logo size={250} colour="currentColor" />
+              <div className="card-body"></div>
+            </div>
+            <div className='pl-6'>
+              <h1 className="text-5xl font-bold">Welcome to ChattyBatty!</h1>
+              <p className="py-8 font-medium text-lg">Talk with friends and stuff</p>
+              <button className="btn btn-primary btn-lg no-drag " onClick={onClick}>
+                <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" />
+                Login with Google
+              </button>
+            </div>
           </div>
         </div>
       </div>

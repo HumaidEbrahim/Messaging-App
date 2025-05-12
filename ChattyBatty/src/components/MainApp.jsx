@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from 'react'
 import DetailBar from './DetailBar'
 import Profile from './Profile'
+import BlankChat from './BlankChat'
 
 const MainApp = ({ uid }) => {
   // user info
@@ -104,13 +105,15 @@ const MainApp = ({ uid }) => {
 
             {/* Chat */}
             <div className="bg-base-100 col-span-1 md:col-span-2 lg:col-span-3 flex flex-col min-h-0">
-              {selectedChat && (
+              {selectedChat ? (
                 <Chat
                   selectedChat={selectedChat}
                   participants={participants}
                   uid={uid}
                 />
-              )}
+              )
+            :
+            <BlankChat />}
             </div>
 
             {/* Detail Bar */}
@@ -120,6 +123,7 @@ const MainApp = ({ uid }) => {
                   participants={participants}
                   selectedChat={selectedChat}
                   uid={uid}
+                  setSelectedChat={setSelectedChat}
                 />
               )}
             </div>

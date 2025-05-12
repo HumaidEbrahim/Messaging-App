@@ -9,3 +9,7 @@
 .no-drag {
   -webkit-app-region: no-drag;
 }
+
+@theme {
+  --breakpoint-lg: 71rem
+}
