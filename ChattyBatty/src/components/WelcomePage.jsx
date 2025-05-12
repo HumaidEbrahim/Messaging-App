@@ -4,12 +4,11 @@ import Logo from './Logo'
 const WelcomePage = ({ onClick }) => {
   return (
     <div className="relative min-h-screen bg-base-200 draggable">
- 
-      <div className="absolute top-10 right-40">
+
+      <div className="absolute top-4 right-4 z-1">
         <ThemeSelector />
       </div>
 
-      {/* Main Content */}
       <div className="hero min-h-screen">
         <div className="mockup-window bg-base-100 border border-base-300 p-10">
           <div className="hero-content flex-col lg:flex-row">
