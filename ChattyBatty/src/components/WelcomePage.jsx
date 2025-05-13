@@ -5,7 +5,7 @@ const WelcomePage = ({ onClick }) => {
   return (
     <div className="relative min-h-screen bg-base-200 draggable">
 
-      <div className="absolute top-4 right-4 z-1">
+      <div className="absolute top-10 right-10 z-1">
         <ThemeSelector />
       </div>
 

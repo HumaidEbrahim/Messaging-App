@@ -47,7 +47,7 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
       <button className="btn btn-soft btn-error btn-wide" onClick={deleteGroup}>
         Delete Group
       </button>
-      <EditMembers participants={participants} groupName={groupName} />
+      {/* <EditMembers participants={participants} groupName={groupName} /> */}
        </div>
     )}
     
@@ -76,49 +76,49 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
   )
 }
 
-const EditMembers = ({ participants }) => {
-  const [groupMembers, setGroupMembers] = useState(participants)
-  const friends = useContext(FriendContext)
-  return (
-     <div className="dropdown dropdown-bottom dropdown-end ">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-circle btn-primary m-1"
-          >
-            <MdGroupAdd size={20} />
-          </div>
-          <div className="dropdown-content menu bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl">
-            <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 w-full">
-              {/* <legend className="fieldset-legend">Group Name?</legend>
-              <div className="join">
-                <input
-                  type="text"
-                  value={groupName}
-                  onChange={(e) => setGroupName(e.target.value)}
-                  className="input join-item"
-                  placeholder="Name"
-                />
-                <button onClick={createGroup} className="btn join-item">
-                  <CgAddR size={20} />
-                </button>
-              </div> */}
-            </fieldset>
-            <ul tabIndex={0}>
-              {friends.map((friend) => (
-                <GroupChatItem
-                  key={friend.id}
-                  friend={friend}
-                  setGroupMembers={setGroupMembers}
-                  groupMembers={groupMembers}
+// const EditMembers = ({ participants }) => {
+//   const [groupMembers, setGroupMembers] = useState(participants)
+//   const friends = useContext(FriendContext)
+//   return (
+//      <div className="dropdown dropdown-bottom dropdown-end ">
+//           <div
+//             tabIndex={0}
+//             role="button"
+//             className="btn btn-circle btn-primary m-1"
+//           >
+//             <MdGroupAdd size={20} />
+//           </div>
+//           <div className="dropdown-content menu bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl">
+//             <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 w-full">
+//               {/* <legend className="fieldset-legend">Group Name?</legend>
+//               <div className="join">
+//                 <input
+//                   type="text"
+//                   value={groupName}
+//                   onChange={(e) => setGroupName(e.target.value)}
+//                   className="input join-item"
+//                   placeholder="Name"
+//                 />
+//                 <button onClick={createGroup} className="btn join-item">
+//                   <CgAddR size={20} />
+//                 </button>
+//               </div> */}
+//             </fieldset>
+//             <ul tabIndex={0}>
+//               {friends.map((friend) => (
+//                 <GroupChatItem
+//                   key={friend.id}
+//                   friend={friend}
+//                   setGroupMembers={setGroupMembers}
+//                   groupMembers={groupMembers}
                   
-                />
-              ))}
-            </ul>
-          </div>
-        </div>
-  )
-}
+//                 />
+//               ))}
+//             </ul>
+//           </div>
+//         </div>
+//   )
+// }
 
 const GroupChatItem = ({ friend, setGroupMembers, groupMembers }) => {
   const isChecked = groupMembers.includes(friend.id)
