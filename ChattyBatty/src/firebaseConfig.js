@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, setPersistence, inMemoryPersistence } from 'firebase/auth'
+import { getAuth, setPersistence, inMemoryPersistence, browserSessionPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -15,7 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 
 const auth = getAuth(app)
-// setPersistence(auth, inMemoryPersistence)
+setPersistence(auth, browserSessionPersistence)
 export const db = getFirestore(app)
 
 export default auth
