@@ -7,9 +7,11 @@ import { useContext, useState } from 'react'
 const FriendDetails = ({ friend }) => {
   return (
     <>
+    <div className="mb-4 p-3 bg-base-200 rounded-lg text-center">
       <div className="text-lg text-base-content/70 ">{friend?.status}</div>
 
         <div className="text-md text-base-content/50">{friend?.email}</div>
+        </div>
     </>
   )
 }
@@ -32,7 +34,7 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
   return (
     <div className="w-full mt-4 space-y-3">
       {groupDesc && (
-        <div className="mb-4 p-3 bg-base-200 rounded-lg">
+        <div className="mb-4 p-3 bg-base-200 rounded-lg text-center">
           <div className="text-sm font-semibold text-base-content/70">Group Description</div>
           <div className="text-base-content/90">{groupDesc}</div>
           </div>
