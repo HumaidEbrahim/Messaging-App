@@ -29,7 +29,14 @@ const ChatListItem = ({ chat, uid, setSelectedChat }) => {
   const friendId = chat.participants.find((p) => p !== uid)
   const friend = friends?.find((friend) => friend.id === friendId)
 
-  if (!friend) return <div>error</div>
+  if (!friend) {
+    return (
+      <li className="text-sm text-500 px-2">
+        Friend not found or deleted.
+      </li>
+    )
+  }
+  
 
   const date = dayjs(chat?.lastMessage?.sentAt?.toDate())
   const now = dayjs()
@@ -232,6 +239,7 @@ const NewGroupChat = ({ chats, setSelectedChat, uid }) => {
       groupCreator: uid,
       groupPhoto:
         'https://static.vecteezy.com/system/resources/previews/026/019/617/non_2x/group-profile-avatar-icon-default-social-media-forum-profile-photo-vector.jpg',
+      groupDesc: "This is a new group chat"
     })
 
     const docSnap = await getDoc(docRef)

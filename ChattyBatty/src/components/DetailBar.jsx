@@ -1,4 +1,4 @@
-import { doc, deleteDoc, updateDoc, arrayRemove } from 'firebase/firestore'
+import { doc, deleteDoc, updateDoc, arrayRemove, getDoc } from 'firebase/firestore'
 import { db } from '../firebaseConfig'
 import { MdGroupAdd } from 'react-icons/md'
 import FriendContext from '../FriendContext'
@@ -14,7 +14,7 @@ const FriendDetails = ({ friend }) => {
   )
 }
 
-const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedChat }) => {
+const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedChat, groupDesc }) => {
 
     const deleteGroup = async () => {
         await deleteDoc(doc(db, 'chat', groupId)) 
@@ -31,6 +31,13 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
 
   return (
     <div className="w-full mt-4 space-y-3">
+      {groupDesc && (
+        <div className="mb-4 p-3 bg-base-200 rounded-lg">
+          <div className="text-sm font-semibold text-base-content/70">Group Description</div>
+          <div className="text-base-content/90">{groupDesc}</div>
+          </div>
+      )}
+
        {groupCreator !== uid ? (
       <button className="btn btn-soft btn-error btn-wide" onClick={leaveGroup}>Leave Group</button>
     ) : (
@@ -41,7 +48,9 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
       <EditMembers />
        </>
     )}
-      <div className="text-lg font-semibold mb-2">Participants - {participants.length} </div>
+    
+    <div className="mb-4 p-3 bg-base-200 rounded-lg">
+      <div className="text-sm font-semibold text-base-content/70">Participants - {participants.length} </div>
       {participants.map((p) => (
         <div key={p.id} className="flex items-center space-x-3">
           <div className="avatar">
@@ -49,14 +58,18 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
               <img src={p.photo} alt={p.username} />
             </div>
           </div>
+          
           <div className="flex flex-col">
             <span className="text-sm font-medium">{p.username}</span>
             {p.id === groupCreator && (
-              <span className="text-xs text-primary">Group Creator</span>
+              <span className="text-xs text-primary">Group Admin</span>
             )}
           </div>
         </div>
-      ))}
+      )
+    )}
+    </div>
+      
     </div>
   )
 }
@@ -132,7 +145,8 @@ const DetailBar = ({ selectedChat, participants, uid, setSelectedChat }) => {
           groupCreator={selectedChat.groupCreator}
            uid={uid} 
            groupId={selectedChat.id} 
-            setSelectedChat={setSelectedChat}/>
+            setSelectedChat={setSelectedChat}
+            groupDesc={selectedChat.groupDesc}/>
          ) 
         : (<FriendDetails friend={friend}/>)}
 
