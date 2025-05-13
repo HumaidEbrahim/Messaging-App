@@ -16,19 +16,19 @@ const FriendDetails = ({ friend }) => {
   )
 }
 
-const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedChat, groupDesc }) => {
+const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedChat, groupDesc, groupName }) => {
 
     const deleteGroup = async () => {
         await deleteDoc(doc(db, 'chat', groupId)) 
         setSelectedChat(null)
     }
 
-    const leaveGroup = async () => {
-      await updateDoc(doc(db, 'chat', groupId), {
-        participants: arrayRemove(uid)
-      } )
-      setSelectedChat(null)
-    }
+    // const leaveGroup = async () => {
+    //   await updateDoc(doc(db, 'chat', groupId), {
+    //     participants: arrayRemove(uid)
+    //   } )
+    //   setSelectedChat(null)
+    // }
   
 
   return (
@@ -40,21 +40,21 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
           </div>
       )}
 
-       {groupCreator !== uid ? (
-      <button className="btn btn-soft btn-error btn-wide" onClick={leaveGroup}>Leave Group</button>
-    ) : (
-      <> 
+       {groupCreator === uid && (
+      // <button className="btn btn-soft btn-error btn-wide" onClick={leaveGroup}>Leave Group</button>
+      
+      <div> 
       <button className="btn btn-soft btn-error btn-wide" onClick={deleteGroup}>
         Delete Group
       </button>
-      <EditMembers />
-       </>
+      <EditMembers participants={participants} groupName={groupName} />
+       </div>
     )}
     
     <div className="mb-4 p-3 bg-base-200 rounded-lg">
       <div className="text-sm font-semibold text-base-content/70">Participants - {participants.length} </div>
       {participants.map((p) => (
-        <div key={p.id} className="flex items-center space-x-3">
+        <div key={p.id} className="flex items-center space-x-3 py-2">
           <div className="avatar">
             <div className="w-10 rounded-full">
               <img src={p.photo} alt={p.username} />
@@ -76,8 +76,9 @@ const GroupDetails = ({ participants, groupCreator, uid, groupId, setSelectedCha
   )
 }
 
-const EditMembers = () => {
-const friends = useContext(FriendContext)
+const EditMembers = ({ participants }) => {
+  const [groupMembers, setGroupMembers] = useState(participants)
+  const friends = useContext(FriendContext)
   return (
      <div className="dropdown dropdown-bottom dropdown-end ">
           <div
@@ -104,19 +105,45 @@ const friends = useContext(FriendContext)
               </div> */}
             </fieldset>
             <ul tabIndex={0}>
-              {/* {friends.map((friend) => (
-                <NewGroupChatItem
+              {friends.map((friend) => (
+                <GroupChatItem
                   key={friend.id}
                   friend={friend}
                   setGroupMembers={setGroupMembers}
                   groupMembers={groupMembers}
-                  chats={chats}
-                  uid={uid}
+                  
                 />
-              ))} */}
+              ))}
             </ul>
           </div>
         </div>
+  )
+}
+
+const GroupChatItem = ({ friend, setGroupMembers, groupMembers }) => {
+  const isChecked = groupMembers.includes(friend.id)
+
+  const selectMember = (event) => {
+    if (event.currentTarget.checked)
+      setGroupMembers([...groupMembers, friend.id])
+    else setGroupMembers(groupMembers.filter((id) => id !== friend.id))
+  }
+  return (
+    <li onClick={() => {}} className="border-b border-base-content/10 ">
+      <div>
+        <img
+          className="w-10 h-10 rounded-full object-cover "
+          src={friend.photo}
+        />
+        <div className="text-xs uppercase font-medium">{friend.username}</div>
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={selectMember}
+          className="checkbox checkbox-sm"
+        />
+      </div>
+    </li>
   )
 }
 
@@ -145,6 +172,7 @@ const DetailBar = ({ selectedChat, participants, uid, setSelectedChat }) => {
         {selectedChat.isGroup ?
          (<GroupDetails participants={participants} 
           groupCreator={selectedChat.groupCreator}
+          groupName={selectedChat.groupName}
            uid={uid} 
            groupId={selectedChat.id} 
             setSelectedChat={setSelectedChat}
