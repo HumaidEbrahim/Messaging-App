@@ -8,7 +8,7 @@ export default [
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       globals: globals.browser,
       parserOptions: {
         ecmaVersion: 'latest',
@@ -24,10 +24,20 @@ export default [
       ...js.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'react-refresh/only-export-components': [
         'warn',
-        { allowConstantExport: true },
+        {
+          allowConstantExport: true,
+          allowExportNames: ['useFriends', 'useToast'],
+        },
       ],
     },
+  },
+  {
+    // Config files, scripts and tests run in Node.
+    files: ['*.config.js', 'tests/**/*.js', 'scripts/**/*.js'],
+    languageOptions: { globals: globals.node },
+    rules: { 'no-console': 'off' },
   },
 ]

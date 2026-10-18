@@ -1,0 +1,197 @@
+rules_version = '2';
+
+// Limits here must match src/lib/constants.js.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function me() {
+      return request.auth.uid;
+    }
+
+    function userDoc(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data;
+    }
+
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // Items in the new list that were not in the old one.
+    function added(field) {
+      return request.resource.data.get(field, []).toSet()
+        .difference(resource.data.get(field, []).toSet());
+    }
+
+    // Items in the old list that are not in the new one.
+    function removed(field) {
+      return resource.data.get(field, []).toSet()
+        .difference(request.resource.data.get(field, []).toSet());
+    }
+
+    function isShortString(value, minLen, maxLen) {
+      return value is string && value.size() >= minLen && value.size() <= maxLen;
+    }
+
+    // ---------------------------------------------------------------- users
+    match /users/{uid} {
+      // Profiles can be read one at a time. Listing is limited to single-result
+      // queries (find-by-email) so the whole user directory can't be dumped.
+      allow get: if signedIn();
+      allow list: if signedIn() && request.query.limit <= 1;
+
+      allow create: if signedIn() && me() == uid
+        && request.resource.data.keys().hasOnly(
+          ['username', 'status', 'photo', 'creationDate', 'friends', 'incomingRequests', 'email'])
+        && isShortString(request.resource.data.username, 1, 100)
+        && isShortString(request.resource.data.status, 0, 140)
+        && request.resource.data.creationDate == request.time
+        && request.resource.data.friends == []
+        && request.resource.data.incomingRequests == []
+        && request.resource.data.email == request.auth.token.email.lower();
+
+      // Editing your own profile. Email and creation date are fixed, friends can
+      // only be added by accepting a pending request, and nobody can put
+      // requests into their own inbox.
+      allow update: if signedIn() && me() == uid
+        && changedKeys().hasOnly(['username', 'status', 'photo', 'friends', 'incomingRequests'])
+        && isShortString(request.resource.data.username, 1, 100)
+        && isShortString(request.resource.data.status, 0, 140)
+        && added('friends').hasOnly(resource.data.get('incomingRequests', []))
+        && added('incomingRequests').size() == 0;
+
+      // Touching someone else's profile: you may only add or remove *yourself*
+      // in their friend requests, remove yourself from their friends, or add
+      // yourself to their friends when accepting a request they sent you.
+      allow update: if signedIn() && me() != uid
+        && changedKeys().hasOnly(['friends', 'incomingRequests'])
+        && added('incomingRequests').hasOnly([me()])
+        && removed('incomingRequests').hasOnly([me()])
+        && removed('friends').hasOnly([me()])
+        && added('friends').hasOnly([me()])
+        && (added('friends').size() == 0
+            || uid in userDoc(me()).get('incomingRequests', []));
+
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------- chats
+    match /chat/{chatId} {
+      function isMember() {
+        return me() in resource.data.participants;
+      }
+
+      function isGroupAdmin() {
+        return resource.data.get('isGroup', false) == true
+          && resource.data.get('groupCreator', null) == me();
+      }
+
+      function validParticipants(list, minSize) {
+        return list is list
+          && list.size() >= minSize && list.size() <= 50
+          && list.toSet().size() == list.size()
+          && me() in list;
+      }
+
+      function othersAreMyFriends(list) {
+        return list.toSet().difference([me()].toSet())
+          .hasOnly(userDoc(me()).get('friends', []));
+      }
+
+      function validGroupFields(data) {
+        return isShortString(data.groupName, 1, 60)
+          && isShortString(data.get('groupDesc', ''), 0, 300);
+      }
+
+      function validLastMessage() {
+        let msg = request.resource.data.lastMessage;
+        return !('lastMessage' in changedKeys())
+          || (msg.keys().hasOnly(['message', 'sentBy', 'sentAt'])
+              && msg.sentBy == me()
+              && msg.sentAt == request.time
+              && isShortString(msg.message, 1, 2000));
+      }
+
+      function onlyMyReadReceipt() {
+        return !('readBy' in changedKeys())
+          || request.resource.data.get('readBy', {})
+               .diff(resource.data.get('readBy', {}))
+               .affectedKeys().hasOnly([me()]);
+      }
+
+      allow read: if signedIn() && isMember();
+
+      // Direct chats (not groups) use a deterministic id, dm_<uidA>_<uidB>,
+      // so the same pair of people can't end up with two conversations.
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(
+          ['participants', 'isGroup', 'groupName', 'groupDesc', 'groupCreator',
+           'lastMessage', 'createdAt', 'readBy'])
+        && validParticipants(request.resource.data.participants, 2)
+        && othersAreMyFriends(request.resource.data.participants)
+        && request.resource.data.lastMessage == {'message': '', 'sentAt': null, 'sentBy': null}
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.get('readBy', {}) == {}
+        && (request.resource.data.get('isGroup', false) == true
+          ? request.resource.data.groupCreator == me()
+            && validGroupFields(request.resource.data)
+          : request.resource.data.participants.size() == 2
+            && !('groupCreator' in request.resource.data)
+            && !('groupName' in request.resource.data)
+            && (chatId == 'dm_' + request.resource.data.participants[0] + '_' + request.resource.data.participants[1]
+              || chatId == 'dm_' + request.resource.data.participants[1] + '_' + request.resource.data.participants[0]));
+
+      // Any member: post a message preview and/or mark the chat as read.
+      allow update: if signedIn() && isMember()
+        && changedKeys().hasOnly(['lastMessage', 'readBy'])
+        && validLastMessage()
+        && onlyMyReadReceipt();
+
+      // Group admin: rename, edit description, add or remove members.
+      allow update: if signedIn() && isGroupAdmin()
+        && changedKeys().hasOnly(['groupName', 'groupDesc', 'participants', 'readBy', 'lastMessage'])
+        && validGroupFields(request.resource.data)
+        // The admin may remove everyone else; the group then holds just them.
+        && validParticipants(request.resource.data.participants, 1)
+        && added('participants').hasOnly(userDoc(me()).get('friends', []))
+        && validLastMessage();
+
+      // Any other group member: leave the group.
+      allow update: if signedIn() && isMember()
+        && resource.data.get('isGroup', false) == true
+        && !isGroupAdmin()
+        && changedKeys().hasOnly(['participants', 'readBy'])
+        && removed('participants').hasOnly([me()])
+        && removed('participants').size() == 1
+        && added('participants').size() == 0
+        && onlyMyReadReceipt();
+
+      allow delete: if signedIn() && isGroupAdmin();
+
+      // ------------------------------------------------------------ messages
+      match /messages/{messageId} {
+        function chat() {
+          return get(/databases/$(database)/documents/chat/$(chatId)).data;
+        }
+
+        allow read: if signedIn() && me() in chat().participants;
+
+        allow create: if signedIn() && me() in chat().participants
+          && request.resource.data.keys().hasOnly(['message', 'sentBy', 'sentAt'])
+          && request.resource.data.sentBy == me()
+          && request.resource.data.sentAt == request.time
+          && isShortString(request.resource.data.message, 1, 2000);
+
+        allow update: if false;
+
+        // Senders can delete their own messages; group admins can clear a group.
+        allow delete: if signedIn()
+          && (resource.data.sentBy == me()
+            || chat().get('groupCreator', null) == me());
+      }
+    }
+  }
+}

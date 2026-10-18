@@ -1,133 +1,182 @@
-import SideBar from './SideBar'
-import Header from './Header'
-import Chat from './Chat'
-import { FriendProvider } from '../FriendContext'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDocumentData, useCollection } from 'react-firebase-hooks/firestore'
+import { doc, collection, query, where } from 'firebase/firestore'
 import { db } from '../firebaseConfig'
-import {
-  doc,
-  collection,
-  query,
-  where,
-  orderBy,
-  getDoc,
-} from 'firebase/firestore'
-import { useEffect, useState } from 'react'
+import { FriendProvider } from '../context/FriendContext'
+import { useToast } from '../context/ToastContext'
+import { ensureUserProfile, logout } from '../lib/auth'
+import { describeError } from '../lib/chatApi'
+import { chatActivity, isUnread } from '../lib/chats'
+import { useUsers } from '../hooks/useUsers'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import SideBar from './SideBar'
+import Chat from './Chat'
 import DetailBar from './DetailBar'
-import Profile from './Profile'
 import BlankChat from './BlankChat'
+import Logo from './Logo'
 
-const MainApp = ({ uid }) => {
-  // user info
-  const [user] = useDocumentData(doc(db, 'users', uid))
-  console.log('user', user)
-  console.log('uid', uid)
+const ESTIMATE = { serverTimestamps: 'estimate' }
 
-  // selected chat
-  const [selectedChat, setSelectedChat] = useState(null)
-  const [participants, setParticipants] = useState([])
+const MainApp = ({ authUser }) => {
+  const uid = authUser.uid
+  const toast = useToast()
 
-  // get chats
-  const chatQuery = query(
-    collection(db, 'chat'),
-    where('participants', 'array-contains', uid),
+  // ----- Profile
+  const userRef = useMemo(() => doc(db, 'users', uid), [uid])
+  const [user, userLoading, userError] = useDocumentData(userRef)
+
+  const creatingProfile = useRef(false)
+  useEffect(() => {
+    if (userLoading || user || userError || creatingProfile.current) return
+    creatingProfile.current = true
+    ensureUserProfile(authUser).catch((err) => {
+      creatingProfile.current = false
+      toast.error(describeError(err, "Couldn't set up your profile."))
+    })
+  }, [authUser, user, userLoading, userError, toast])
+
+  // ----- Chats
+  const chatQuery = useMemo(
+    () =>
+      query(
+        collection(db, 'chat'),
+        where('participants', 'array-contains', uid),
+      ),
+    [uid],
+  )
+  const [chatSnapshot, chatsLoading, chatsError] = useCollection(chatQuery)
+
+  const chats = useMemo(
+    () =>
+      chatSnapshot?.docs
+        .map((d) => ({ ...d.data(ESTIMATE), id: d.id }))
+        .sort((a, b) => chatActivity(b) - chatActivity(a)) ?? [],
+    [chatSnapshot],
   )
 
-  const [chatSnapshot] = useCollection(chatQuery)
+  const [selectedChatId, setSelectedChatId] = useState(null)
+  const selectedChat = chats.find((chat) => chat.id === selectedChatId) ?? null
 
-  const chats = chatSnapshot?.docs.map((doc) => ({
-    ...doc.data(),
-    id: doc.id,
-  }))
-
-  //   useEffect(() => {
-  //   if (selectedChat && chats.length > 0) {
-  //     const details = chats.find(chat => chat.id === selectedChat)
-  //     setSelectedChatDetails(details);
-  //   }
-  // }, [selectedChat, chats])
-
-  // get chat participant details
+  // If the open chat disappears (deleted, or you were removed), close it.
   useEffect(() => {
-    const fetchParticipants = async () => {
-      if (!selectedChat?.participants?.length) return
-
-      const participantPromises = selectedChat.participants.map((id) => {
-        const docRef = doc(db, 'users', id)
-        return getDoc(docRef)
-      })
-
-      const participantDocs = await Promise.all(participantPromises)
-
-      const participants = participantDocs
-        .map((docSnap) => {
-          if (docSnap.exists()) {
-            return { ...docSnap.data(), id: docSnap.id }
-          }
-          return null
-        })
-        .filter(Boolean)
-
-      setParticipants(participants)
+    if (selectedChatId && chatSnapshot && !selectedChat) {
+      setSelectedChatId(null)
     }
+  }, [selectedChatId, chatSnapshot, selectedChat])
 
-    fetchParticipants()
-  }, [selectedChat?.participants])
+  const participants = useUsers(selectedChat?.participants)
 
-  console.log('participants', participants)
+  // ----- Details panel: docked on wide screens, an overlay elsewhere
+  const isWide = useMediaQuery('(min-width: 80rem)')
+  const [detailsOpen, setDetailsOpen] = useState(isWide)
+  useEffect(() => setDetailsOpen(isWide), [isWide])
 
-  console.log('selectedChat', selectedChat)
-  if (!user) {
-    return <div>Loading...</div>
+  // ----- Unread count in the window title
+  const unreadCount = chats.filter((chat) => isUnread(chat, uid)).length
+  useEffect(() => {
+    document.title = unreadCount
+      ? `(${unreadCount}) ChattyBatty`
+      : 'ChattyBatty'
+  }, [unreadCount])
+
+  useEffect(() => {
+    if (chatsError)
+      toast.error(describeError(chatsError, "Couldn't load your chats."))
+  }, [chatsError, toast])
+
+  if (userError) {
+    return (
+      <div className="min-h-dvh grid place-items-center bg-base-200 p-6">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <h1 className="text-2xl font-bold">Couldn't load your profile</h1>
+          <p className="text-base-content/70">{describeError(userError)}</p>
+          <button className="btn" onClick={logout}>
+            Sign out
+          </button>
+        </div>
+      </div>
+    )
   }
+
+  if (!user) {
+    return (
+      <div className="min-h-dvh grid place-items-center bg-base-200">
+        <Logo
+          size={72}
+          className="text-primary animate-pulse"
+          title="Loading"
+        />
+      </div>
+    )
+  }
+
+  const selectChat = (id) => setSelectedChatId(id)
 
   return (
     <FriendProvider user={user}>
-      <div className="h-screen p-4 pt-7 box-border bg-base-300 draggable">
-        <div className="grid grid-rows-[auto_1fr] h-full rounded-4xl overflow-hidden shadow-lg no-drag">
-          {/* Header */}
-          <div>
-            <Header photo={user.photo} username={user.username} />
-          </div>
+      <div className="h-dvh flex flex-col bg-base-300 md:p-3 md:pt-7 draggable">
+        <div className="flex-1 min-h-0 flex md:rounded-3xl overflow-hidden md:shadow-xl bg-base-100 no-drag">
+          {/* Sidebar: the whole screen on phones until a chat is opened */}
+          <aside
+            className={`${selectedChat ? 'hidden md:flex' : 'flex'} w-full md:w-80 lg:w-88 shrink-0 flex-col border-r border-base-300 min-h-0`}
+          >
+            <SideBar
+              chats={chats}
+              chatsLoading={chatsLoading}
+              uid={uid}
+              user={user}
+              selectedChatId={selectedChatId}
+              onSelectChat={selectChat}
+            />
+          </aside>
 
-          {/* Main Content */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-0.5 h-full min-h-0">
-            {/* Sidebar */}
-            <div className="bg-base-100 hidden md:block overflow-y-auto">
-              <SideBar
-                chats={chats}
+          {/* Conversation */}
+          <main
+            className={`${selectedChat ? 'flex' : 'hidden md:flex'} flex-1 min-w-0 flex-col min-h-0`}
+          >
+            {selectedChat ? (
+              <Chat
+                key={selectedChat.id}
+                chat={selectedChat}
+                participants={participants.byId}
                 uid={uid}
-                setSelectedChat={setSelectedChat}
-                friendIds={user.friends}
-                user={user}
+                onBack={() => setSelectedChatId(null)}
+                detailsOpen={detailsOpen}
+                onToggleDetails={() => setDetailsOpen((open) => !open)}
               />
-            </div>
+            ) : (
+              <BlankChat hasChats={chats.length > 0} />
+            )}
+          </main>
 
-            {/* Chat */}
-            <div className="bg-base-100 col-span-1 md:col-span-2 lg:col-span-3 flex flex-col min-h-0">
-              {selectedChat ? (
-                <Chat
-                  selectedChat={selectedChat}
-                  participants={participants}
-                  uid={uid}
-                />
-              )
-            :
-            <BlankChat />}
-            </div>
-
-            {/* Detail Bar */}
-            <div className="bg-base-100 overflow-y-auto hidden lg:block">
-              {selectedChat && (
-                <DetailBar
-                  participants={participants}
-                  selectedChat={selectedChat}
-                  uid={uid}
-                  setSelectedChat={setSelectedChat}
+          {/* Details */}
+          {selectedChat && detailsOpen && (
+            <>
+              {!isWide && (
+                <div
+                  className="fixed inset-0 z-30 bg-black/40"
+                  onClick={() => setDetailsOpen(false)}
+                  aria-hidden="true"
                 />
               )}
-            </div>
-          </div>
+              <aside
+                className={`${
+                  isWide
+                    ? 'w-80 shrink-0 border-l border-base-300'
+                    : 'fixed inset-y-0 right-0 z-40 w-full max-w-sm shadow-2xl'
+                } bg-base-100 overflow-y-auto`}
+                aria-label="Chat details"
+              >
+                <DetailBar
+                  chat={selectedChat}
+                  participants={participants.byId}
+                  uid={uid}
+                  onClose={() => setDetailsOpen(false)}
+                  showClose={!isWide}
+                />
+              </aside>
+            </>
+          )}
         </div>
       </div>
     </FriendProvider>

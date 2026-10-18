@@ -23,3 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 .env
+# Firebase emulator logs
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Per-developer Firebase setup (written by npm run setup)
+.firebaserc
+.env.backup

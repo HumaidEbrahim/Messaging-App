@@ -1,71 +1,58 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { LuCheck, LuPalette } from 'react-icons/lu'
+import { THEMES, applyTheme, getSavedTheme } from '../lib/theme'
 
-const ThemeSelector = () => {
-  const [theme, setTheme] = useState('dark')
+// Each option previews its own palette by rendering under that theme.
+const Swatch = ({ name }) => (
+  <span
+    data-theme={name}
+    className="flex gap-0.5 rounded-md bg-base-100 p-1 shadow-sm"
+    aria-hidden="true"
+  >
+    <span className="size-2 rounded-full bg-primary" />
+    <span className="size-2 rounded-full bg-secondary" />
+    <span className="size-2 rounded-full bg-accent" />
+  </span>
+)
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'dark'
-    setTheme(savedTheme)
-    document.documentElement.setAttribute('data-theme', savedTheme)
-  },[])
+const ThemeSelector = ({ align = 'dropdown-end' }) => {
+  const [theme, setTheme] = useState(getSavedTheme)
 
-  const handleThemeChange = (e) => {
-    const selectedTheme = e.target.value
-    setTheme(selectedTheme)
-    document.documentElement.setAttribute('data-theme', selectedTheme)
-    localStorage.setItem('theme', selectedTheme)
+  const choose = (name) => {
+    setTheme(name)
+    applyTheme(name)
+    document.activeElement?.blur()
   }
 
-  const themes = [
-    { id: 1, name: 'dark', emoji: '🌑' },
-    { id: 2, name: 'retro', emoji: '☎️' },
-    { id: 3, name: 'synthwave', emoji: '😎' },
-    { id: 4, name: 'night', emoji: '🌙' },
-    { id: 5, name: 'coffee', emoji: '☕' },
-    { id: 6, name: 'aqua', emoji: '🌊' },
-    { id: 7, name: 'sunset', emoji: '🌄' },
-    { id: 8, name: 'dracula', emoji: '😈' },
-    { id: 9, name: 'abyss', emoji: '👁️' },
-    { id: 10, name: 'dim', emoji: '💡' },
-    { id: 11, name: 'forest', emoji: '🌳' },
-  ]
-
-  const ListItem = ({ name, emoji }) => (
-    <li onClick={handleThemeChange}>
-      <input
-        type="radio"
-        name="theme-dropdown"
-        className="theme-controller w-full btn btn-sm  btn-ghost justify-start"
-        aria-label={name + emoji}
-        value={name}
-      />
-    </li>
-  )
-
   return (
-    <div className="dropdown btn-xs btn-primary mb-2">
+    <div className={`dropdown ${align} no-drag`}>
       <div
         tabIndex={0}
         role="button"
-        className="btn m-1 no-drag"
+        className="btn btn-ghost btn-sm btn-square"
+        aria-label="Change theme"
+        title="Change theme"
       >
-        Theme
-        <svg
-          width="12px"
-          height="12px"
-          className="inline-block h-2 w-2 fill-current opacity-60"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 2048 2048"
-        >
-          <path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path>
-        </svg>
+        <LuPalette className="size-5" />
       </div>
       <ul
         tabIndex={0}
-        className="dropdown-content bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl no-drag"
+        className="dropdown-content menu bg-base-200 rounded-box z-50 w-52 p-2 shadow-xl max-h-[70dvh] overflow-y-auto flex-nowrap"
+        aria-label="Themes"
       >
-        {themes.map((theme) => (
-          <ListItem key={theme.id} name={theme.name} emoji={theme.emoji} />
+        {THEMES.map(({ name, label }) => (
+          <li key={name}>
+            <button
+              type="button"
+              onClick={() => choose(name)}
+              aria-pressed={theme === name}
+              className={theme === name ? 'menu-active' : ''}
+            >
+              <Swatch name={name} />
+              <span className="flex-1">{label}</span>
+              {theme === name && <LuCheck aria-hidden="true" />}
+            </button>
+          </li>
         ))}
       </ul>
     </div>

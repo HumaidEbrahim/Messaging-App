@@ -1,10 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/ico" href="/ChattyBattyLogoIcon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/ChattyBattyLogoIcon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="ChattyBatty: chat with friends one-on-one or in groups."
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>ChattyBatty</title>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash of the default.
+      try {
+        var theme = localStorage.getItem('theme')
+        if (theme && /^[a-z]+$/.test(theme)) {
+          document.documentElement.setAttribute('data-theme', theme)
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

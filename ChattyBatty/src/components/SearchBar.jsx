@@ -1,34 +1,32 @@
-import React from 'react'
+import { LuSearch, LuX } from 'react-icons/lu'
 
-const SearchBar = ({ onSearch }) => {
-  return (
-    <>
-      <label className="input">
-        <svg
-          className="h-[1em] opacity-50"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-        >
-          <g
-            strokeLinejoin="round"
-            strokeLinecap="round"
-            strokeWidth="2.5"
-            fill="none"
-            stroke="currentColor"
-          >
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.3-4.3"></path>
-          </g>
-        </svg>
-        <input
-          type="text"
-          required
-          placeholder="Search"
-          onChange={(e) => onSearch(e.target.value)}
-        />
-      </label>
-    </>
-  )
-}
+const SearchBar = ({
+  value,
+  onChange,
+  placeholder = 'Search',
+  label = 'Search',
+}) => (
+  <label className="input input-sm flex-1 min-w-0 rounded-full">
+    <LuSearch className="opacity-50 shrink-0" aria-hidden="true" />
+    <input
+      type="search"
+      value={value}
+      placeholder={placeholder}
+      aria-label={label}
+      onChange={(event) => onChange(event.target.value)}
+      onKeyDown={(event) => event.key === 'Escape' && onChange('')}
+    />
+    {value && (
+      <button
+        type="button"
+        className="opacity-60 hover:opacity-100"
+        onClick={() => onChange('')}
+        aria-label="Clear search"
+      >
+        <LuX />
+      </button>
+    )}
+  </label>
+)
 
 export default SearchBar

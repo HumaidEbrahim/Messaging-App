@@ -1,72 +1,106 @@
-import { logout } from '../Login'
-import dayjs from 'dayjs'
-import { CgAddR } from 'react-icons/cg'
-import { updateDoc, doc } from 'firebase/firestore'
-import { db } from '../firebaseConfig'
 import { useState } from 'react'
+import { LuLogOut } from 'react-icons/lu'
+import { useToast } from '../context/ToastContext'
+import { logout } from '../lib/auth'
+import { describeError, updateStatus } from '../lib/chatApi'
+import { MAX_STATUS_LENGTH } from '../lib/constants'
+import { formatMemberSince } from '../lib/format'
+import Avatar from './Avatar'
+import Modal from './Modal'
 
-const Profile = ({ user, uid }) => {
-  const [status, setStatus] = useState(user.status)
+const StatusForm = ({ user, uid }) => {
+  const toast = useToast()
+  const [status, setStatus] = useState(user.status || '')
+  const [saving, setSaving] = useState(false)
+  const unchanged = status.trim() === (user.status || '').trim()
 
-  const updateStatus = async () => {
-    const docRef = await updateDoc(doc(db, 'users', uid), { status: status })
-    console.log('status', docRef)
+  const save = async (event) => {
+    event.preventDefault()
+    if (unchanged) return
+    setSaving(true)
+    try {
+      await updateStatus(uid, status)
+      toast.success('Status updated.')
+    } catch (err) {
+      toast.error(describeError(err, "Couldn't update your status."))
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
-    <div className="flex flex-col dropdown dropdown-center dropdown-hover  dropdown-top ">
-      <div className="bg-base-200 rounded-2xl p-2 pr-16 pl-8 gap-4 flex items-center ">
-        <div className=" flex-1 ">
-          <p className="text-xl font-medium">{user?.username}</p>
-          <p className="text-sm text-base-content/70">{user?.status}</p>
-        </div>
-
-        <img
-          className="w-10 h-10  rounded-full object-cover"
-          src={user?.photo}
-          referrerPolicy="no-referrer"
+    <form onSubmit={save} className="flex flex-col gap-1 w-full">
+      <label htmlFor="status-input" className="text-sm font-medium">
+        Status
+      </label>
+      <div className="join w-full">
+        <input
+          id="status-input"
+          className="input join-item flex-1"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          maxLength={MAX_STATUS_LENGTH}
+          placeholder="What are you up to?"
         />
-
-        <div className="dropdown-content menu bg-base-300 rounded-box z-1 w-full p-2 shadow-sm">
-          <div className="  rounded-xl p-6  ">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="avatar online">
-                <div className="w-24 rounded-full">
-                  <img src={user.photo} />
-                </div>
-              </div>
-              <div className="text-3xl font-medium ">{user.username}</div>
-              <p className="text-base-content/70">
-                {' '}
-                Member Since:{' '}
-                {dayjs(user?.creationDate?.toDate()).format('D MMMM YYYY')}{' '}
-              </p>
-              <p className="text-base-content/70"> {user.email} </p>
-              <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full border p-4">
-                <legend className="fieldset-legend">Status</legend>
-                <div className="join">
-                  <input
-                    type="text"
-                    className="input join-item"
-                    placeholder={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                  />
-                  <button className="btn join-item" onClick={updateStatus}>
-                    <CgAddR size={20} />
-                  </button>
-                </div>
-              </fieldset>
-              <button
-                className="btn btn-wide btn-primary btn-soft"
-                onClick={logout}
-              >
-                LogOut
-              </button>
-            </div>
-          </div>
-        </div>
+        <button
+          className="btn btn-primary join-item"
+          disabled={unchanged || saving}
+        >
+          {saving ? (
+            <span className="loading loading-spinner loading-xs" />
+          ) : (
+            'Save'
+          )}
+        </button>
       </div>
-    </div>
+      <span className="text-xs text-base-content/55 self-end">
+        {status.length}/{MAX_STATUS_LENGTH}
+      </span>
+    </form>
+  )
+}
+
+const Profile = ({ user, uid }) => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="w-full flex items-center gap-3 p-2 rounded-2xl hover:bg-base-200 text-left"
+        aria-label="Your profile"
+      >
+        <Avatar src={user.photo} name={user.username} />
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold truncate">{user.username}</p>
+          <p className="text-sm text-base-content/60 truncate">{user.status}</p>
+        </div>
+      </button>
+
+      <Modal open={open} onClose={() => setOpen(false)} title="Your profile">
+        <div className="flex flex-col items-center gap-3 pt-2">
+          <Avatar src={user.photo} name={user.username} size="xl" />
+          <div className="text-center">
+            <p className="text-2xl font-bold tracking-tight">{user.username}</p>
+            <p className="text-base-content/65">{user.email}</p>
+            {user.creationDate && (
+              <p className="text-sm text-base-content/55 mt-1">
+                Member since {formatMemberSince(user.creationDate)}
+              </p>
+            )}
+          </div>
+          <StatusForm user={user} uid={uid} />
+          <button
+            className="btn btn-ghost text-error w-full mt-2"
+            onClick={logout}
+          >
+            <LuLogOut aria-hidden="true" />
+            Sign out
+          </button>
+        </div>
+      </Modal>
+    </>
   )
 }
 
